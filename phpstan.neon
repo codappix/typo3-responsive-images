@@ -1,0 +1,42 @@
+includes:
+    - 'phpstan-baseline.neon'
+    - 'vendor/spaze/phpstan-disallowed-calls/disallowed-dangerous-calls.neon'
+    - 'vendor/spaze/phpstan-disallowed-calls/disallowed-execution-calls.neon'
+    - 'vendor/spaze/phpstan-disallowed-calls/disallowed-insecure-calls.neon'
+    - 'vendor/spaze/phpstan-disallowed-calls/disallowed-loose-calls.neon'
+
+parameters:
+    level: 'max'
+    paths:
+        - Classes
+        - Configuration
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    treatPhpDocTypesAsCertain: false
+
+    cognitive_complexity:
+        class: 40
+        function: 9
+
+    disallowedFunctionCalls:
+        -
+            function:
+                - 'var_dump()'
+                - 'xdebug_break()'
+            message: 'Do not add debugging'
+        -
+            function: 'header()'
+            message: 'Use API instead'
+    disallowedStaticCalls:
+        -
+            method: 'TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump()'
+            message: 'Do not add debugging'
+    disallowedSuperglobals:
+        -
+            superglobal:
+                - '$_GET'
+                - '$_POST'
+                - '$_FILES'
+                - '$_SERVER'
+            message: 'Use API instead'

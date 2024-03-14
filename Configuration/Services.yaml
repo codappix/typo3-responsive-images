@@ -1,0 +1,24 @@
+# Configuration/Services.yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Codappix\ResponsiveImages\:
+        resource: '../Classes/*'
+
+    extbaseSettings.ResponsiveImages:
+        class: 'array'
+        factory:
+            - '@TYPO3\CMS\Extbase\Configuration\ConfigurationManager'
+            - 'getConfiguration'
+        arguments:
+            $configurationType: 'Settings'
+            $extensionName: 'ResponsiveImages'
+            $pluginName: ''
+
+    Codappix\ResponsiveImages\Configuration\ConfigurationManager:
+        public: true
+        arguments:
+            $settings: '@extbaseSettings.ResponsiveImages'
