@@ -115,19 +115,17 @@ final class Rootline
         assert(is_int($parentContainer));
         $parent = $this->fetchContentElementFromDatabase($parentContainer);
 
-        if (!is_null($parent)) {
-            $this->rootline[] = $parent;
-            $this->parseRootline($parent);
+        $this->rootline[] = $parent;
+        $this->parseRootline($parent);
 
-            $contentElement->setParent($parent);
-        }
+        $contentElement->setParent($parent);
     }
 
     /**
      * @throws \Doctrine\DBAL\Exception
      * @throws Exception
      */
-    private function fetchContentElementFromDatabase(int $identifier): ?ContentElementInterface
+    private function fetchContentElementFromDatabase(int $identifier): ContentElementInterface
     {
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
@@ -136,7 +134,7 @@ final class Rootline
             ->from('tt_content')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($identifier, PDO::PARAM_INT)))
             ->executeQuery()
-            ->fetch()
+            ->fetchAssociative()
         ;
 
         if ($rawData === false) {
