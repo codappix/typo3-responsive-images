@@ -1,0 +1,48 @@
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:container_example/Configuration/TypoScript/Container/">
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:container_example/Configuration/TypoScript/ContentElements/">
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:container_example/Configuration/TypoScript/Extensions/">
+
+lib.containerElement =< lib.contentElement
+lib.containerElement {
+    layoutRootPaths {
+        100 = EXT:fluid_styled_content/Resources/Private/Layouts
+    }
+
+    templateRootPaths {
+        100 = EXT:fluid_styled_content/Resources/Private/Templates
+        110 = EXT:container_example/Resources/Private/Templates/Container
+    }
+
+    partialRootPaths {
+        100 = EXT:fluid_styled_content/Resources/Private/Partials
+    }
+
+    dataProcessing {
+        10 = B13\Container\DataProcessing\ContainerProcessor
+    }
+}
+
+tt_content.example_container-1col < lib.containerElement
+tt_content.example_container-1col {
+    templateName = 1col
+}
+
+tt_content.example_container-2col-33-66 < lib.containerElement
+tt_content.example_container-2col-33-66 {
+    templateName = 2col-33-66
+}
+
+tt_content.example_container-2col-50-50 < lib.containerElement
+tt_content.example_container-2col-50-50 {
+    templateName = 2col-50-50
+}
+
+tt_content.example_container-2col-66-33 < lib.containerElement
+tt_content.example_container-2col-66-33 {
+    templateName = 2col-66-33
+}
+
+tt_content.example_container-3col < lib.containerElement
+tt_content.example_container-3col {
+    templateName = 3col
+}

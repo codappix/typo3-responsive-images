@@ -1,0 +1,27 @@
+plugin.tx_responsiveimages {
+    settings {
+        example_container-2col-66-33 {
+            columns {
+                101 {
+                    multiplier {
+                        xs = 1
+                        sm = 1
+                        md = 0,666
+                        lg = 0,666
+                        xl = 0,666
+                    }
+                }
+
+                102 {
+                    multiplier {
+                        xs = 1
+                        sm = 1
+                        md = 0,333
+                        lg = 0,333
+                        xl = 0,333
+                    }
+                }
+            }
+        }
+    }
+}

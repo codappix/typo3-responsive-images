@@ -1,0 +1,17 @@
+plugin.tx_responsiveimages {
+    settings {
+        example_container-1col {
+            columns {
+                101 {
+                    multiplier {
+                        xs = 1
+                        sm = 1
+                        md = 1
+                        lg = 1
+                        xl = 1
+                    }
+                }
+            }
+        }
+    }
+}

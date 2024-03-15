@@ -23,6 +23,10 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
+use PDO;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Error\Exception;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
@@ -106,6 +110,40 @@ final class Rootline
 
             return;
         }
+
+        $parentContainer = $contentElement->getData('tx_container_parent');
+        assert(is_int($parentContainer));
+        $parent = $this->fetchContentElementFromDatabase($parentContainer);
+
+        if (!is_null($parent)) {
+            $this->rootline[] = $parent;
+            $this->parseRootline($parent);
+
+            $contentElement->setParent($parent);
+        }
+    }
+
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
+     */
+    private function fetchContentElementFromDatabase(int $identifier): ?ContentElementInterface
+    {
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
+        $rawData = $queryBuilder
+            ->select('*')
+            ->from('tt_content')
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($identifier, PDO::PARAM_INT)))
+            ->executeQuery()
+            ->fetch()
+        ;
+
+        if ($rawData === false) {
+            throw new Exception("Content element '" . $identifier . "' not found.");
+        }
+
+        return $this->determineContentElement($rawData);
     }
 
     private function calculateSizes(): void
