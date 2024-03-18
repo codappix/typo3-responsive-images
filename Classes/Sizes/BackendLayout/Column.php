@@ -33,18 +33,13 @@ class Column
     private readonly array $multiplier;
 
     public function __construct(
-        private readonly string $identifier,
+        private readonly int $identifier,
         array $data
     ) {
         $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $data['multiplier']);
     }
 
-    public static function make(mixed ...$arguments): self
-    {
-        return new self(...$arguments);
-    }
-
-    public function getIdentifier(): string
+    public function getIdentifier(): int
     {
         return $this->identifier;
     }

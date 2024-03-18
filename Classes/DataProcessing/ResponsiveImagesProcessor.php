@@ -84,7 +84,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = Rootline::make($processedData['data'])->getFinalSizes();
+        $this->contentElementSizes = (new Rootline($processedData['data']))->getFinalSizes();
         $this->fetchContentElementFieldConfiguration();
         $this->calculateFileDimensions();
 
@@ -175,7 +175,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
 
         if (is_iterable($breakpointsByPath)) {
             foreach ($breakpointsByPath as $breakpointIdentifier => $breakpointData) {
-                $breakpoints[$breakpointIdentifier] = Breakpoint::make($breakpointIdentifier, $breakpointData);
+                $breakpoints[$breakpointIdentifier] = new Breakpoint($breakpointIdentifier, $breakpointData);
             }
         }
 
