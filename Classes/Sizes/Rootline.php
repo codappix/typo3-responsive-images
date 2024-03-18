@@ -49,11 +49,6 @@ final class Rootline
         $this->calculateSizes();
     }
 
-    public static function make(mixed ...$arguments): static
-    {
-        return new self(...$arguments);
-    }
-
     public function getFinalSizes(): array
     {
         return $this->finalSizes;
@@ -82,16 +77,16 @@ final class Rootline
             ->getLayoutForPage($typoscriptFrontendController->page, $typoscriptFrontendController->rootLine)
         ;
 
-        $this->backendLayout = BackendLayout::make($backendLayoutIdentifier);
+        $this->backendLayout = new BackendLayout($backendLayoutIdentifier);
     }
 
     private function determineContentElement(array $data): ContentElementInterface
     {
         if (str_contains((string) $data['CType'], '_container-')) {
-            return Container::make($data);
+            return new Container($data);
         }
 
-        return ContentElement::make($data);
+        return new ContentElement($data);
     }
 
     private function determineRootline(): void
