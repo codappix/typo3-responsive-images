@@ -69,6 +69,10 @@ class ContentElement implements ContentElementInterface
 
     public function setParent(ContentElementInterface $contentElement): void
     {
+        if ($contentElement instanceof Container) {
+            $contentElement->setActiveColumn($contentElement->getColumn($this->colPos));
+        }
+
         $this->parent = $contentElement;
     }
 
