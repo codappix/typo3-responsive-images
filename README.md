@@ -10,9 +10,7 @@ In this development state the extension is only used in one project.
 ##  Missing Features
 
 The extension does not yet:
-- contains tests.
 - work out of the box without configuration.
-- handles b13/containers as optional.
-- support other grid/container frameworks.
+- support content block grids.
 - provide flexible enough configuration for more use cases.
 - support EXT:fluid_styled_content.

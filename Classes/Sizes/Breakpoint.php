@@ -35,11 +35,6 @@ final class Breakpoint
     ) {
     }
 
-    public static function make(mixed ...$arguments): static
-    {
-        return new self(...$arguments);
-    }
-
     public function getIdentifier(): string
     {
         return $this->identifier;

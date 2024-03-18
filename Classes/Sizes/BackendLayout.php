@@ -46,11 +46,6 @@ final class BackendLayout
         $this->determineColumns();
     }
 
-    public static function make(mixed ...$arguments): static
-    {
-        return new self(...$arguments);
-    }
-
     public function getSizes(): array
     {
         return $this->sizes;
@@ -71,7 +66,7 @@ final class BackendLayout
         $this->activeColumn = $column;
     }
 
-    public function getActiveColumn(): ?Column
+    public function getActiveColumn(): Column
     {
         return $this->activeColumn;
     }
@@ -100,8 +95,8 @@ final class BackendLayout
         $breakpointsByPath = $this->configurationManager->getByPath($sizesPath);
 
         if (is_iterable($breakpointsByPath)) {
-            foreach ($this->configurationManager->getByPath($sizesPath) as $columnIdentifier => $columnData) {
-                $this->columns[$columnIdentifier] = Column::make((string) $columnIdentifier, $columnData);
+            foreach ($breakpointsByPath as $columnIdentifier => $columnData) {
+                $this->columns[$columnIdentifier] = new Column($columnIdentifier, $columnData);
             }
         }
 

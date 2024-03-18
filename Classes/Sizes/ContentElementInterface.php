@@ -12,8 +12,6 @@ interface ContentElementInterface
 {
     public function __construct(array $data);
 
-    public static function make(mixed ...$arguments): static;
-
     public function getData(?string $dataIdentifier = null): mixed;
 
     public function getContentType(): string;

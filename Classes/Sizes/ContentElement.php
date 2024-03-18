@@ -44,11 +44,6 @@ class ContentElement implements ContentElementInterface
         $this->colPos = $data['colPos'];
     }
 
-    public static function make(mixed ...$arguments): static
-    {
-        return new static(...$arguments);
-    }
-
     public function getData(?string $dataIdentifier = null): mixed
     {
         if ($dataIdentifier === null) {

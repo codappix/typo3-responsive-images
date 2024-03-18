@@ -66,7 +66,7 @@ final class Container extends ContentElement
         $columnsByPath = $this->configurationManager->getByPath($sizesPath);
         if (is_iterable($columnsByPath)) {
             foreach ($columnsByPath as $columnIdentifier => $columnData) {
-                $this->columns[$columnIdentifier] = Column::make((string) $columnIdentifier, $columnData);
+                $this->columns[$columnIdentifier] = new Column($columnIdentifier, $columnData);
             }
         }
     }
