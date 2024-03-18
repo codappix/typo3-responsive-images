@@ -23,7 +23,7 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use PDO;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Error\Exception;
@@ -132,7 +132,7 @@ final class Rootline
         $rawData = $queryBuilder
             ->select('*')
             ->from('tt_content')
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($identifier, PDO::PARAM_INT)))
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($identifier, Connection::PARAM_INT)))
             ->executeQuery()
             ->fetchAssociative()
         ;

@@ -3,7 +3,6 @@
     "description": "TYPO3 Extension to generate perfectly sized responsive images",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
-    "version": "1.0.0",
     "authors": [
         {
             "name": "Justus Moroni",
@@ -16,17 +15,21 @@
             "Codappix\\ResponsiveImages\\": "Classes/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Codappix\\ResponsiveImages\\Tests\\": "Tests/"
+        }
+    },
     "extra": {
         "typo3/cms": {
-            "extension-key": "responsive_images"
+            "extension-key": "responsive_images",
+            "web-dir": ".Build/public"
         }
     },
     "require": {
         "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
         "typo3/cms-core": "^12.4",
-        "typo3/cms-extbase": "^12.4",
-        "typo3/cms-frontend": "^12.4",
-        "ext-pdo": "*"
+        "typo3/cms-frontend": "^12.4"
     },
     "require-dev": {
         "b13/container": "^2.3",

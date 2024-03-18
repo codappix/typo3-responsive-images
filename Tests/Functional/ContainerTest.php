@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Codappix\ResponsiveImages\Tests;
+
 /*
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
@@ -38,7 +40,7 @@ class ContainerTest extends FunctionalTestCase
         $this->testExtensionsToLoad = [
             'b13/container',
             'codappix/responsive-images',
-            '../Tests/Fixtures/container_example',
+            'typo3conf/ext/responsive_images/Tests/Fixtures/container_example',
         ];
 
         $this->pathsToLinkInTestInstance = [
