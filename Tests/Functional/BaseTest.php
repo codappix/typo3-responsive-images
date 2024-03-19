@@ -29,7 +29,7 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
-class ContainerTest extends FunctionalTestCase
+class BaseTest extends FunctionalTestCase
 {
     use TestingFramework;
 
@@ -40,10 +40,8 @@ class ContainerTest extends FunctionalTestCase
         ];
 
         $this->testExtensionsToLoad = [
-            'b13/container',
             'codappix/responsive-images',
             'typo3conf/ext/responsive_images/Tests/Fixtures/base_example',
-            'typo3conf/ext/responsive_images/Tests/Fixtures/container_example',
         ];
 
         $this->pathsToLinkInTestInstance = [
@@ -59,7 +57,6 @@ class ContainerTest extends FunctionalTestCase
             'EXT:responsive_images/Configuration/TypoScript/Setup.typoscript',
             'EXT:base_example/Configuration/TypoScript/Setup.typoscript',
             'EXT:base_example/Configuration/TypoScript/Rendering.typoscript',
-            'EXT:container_example/Configuration/TypoScript/Setup.typoscript',
         ]);
     }
 
@@ -75,73 +72,13 @@ class ContainerTest extends FunctionalTestCase
                 '4' => 'large 1124 (min-width: 1480px)',
             ],
         ];
-        yield '1 Column' => [
-            '1colDatabase.php',
-            [
-                '0' => 'mobile 734 (max-width: 480px)',
-                '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 924 (max-width: 991px)',
-                '3' => 'default 1124 (max-width: 1479px)',
-                '4' => 'large 1124 (min-width: 1480px)',
-            ],
-        ];
-        yield '2 Column 50-50' => [
-            '2col_50_50_Database.php',
-            [
-                '0' => 'mobile 734 (max-width: 480px)',
-                '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 462 (max-width: 991px)',
-                '3' => 'default 562 (max-width: 1479px)',
-                '4' => 'large 562 (min-width: 1480px)',
-            ],
-        ];
-        yield '2 Column 66-33' => [
-            '2col_66_33_Database.php',
-            [
-                '0' => 'mobile 734 (max-width: 480px)',
-                '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 615.384 (max-width: 991px)',
-                '3' => 'default 748.584 (max-width: 1479px)',
-                '4' => 'large 748.584 (min-width: 1480px)',
-            ],
-        ];
-        yield '2 Column in 1 Column' => [
-            '1col2colDatabase.php',
-            [
-                '0' => 'mobile 734 (max-width: 480px)',
-                '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 462 (max-width: 991px)',
-                '3' => 'default 562 (max-width: 1479px)',
-                '4' => 'large 562 (min-width: 1480px)',
-            ],
-        ];
-        yield '2 Column in 2 Column' => [
-            '2col2colDatabase.php',
-            [
-                '0' => 'mobile 734 (max-width: 480px)',
-                '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 231 (max-width: 991px)',
-                '3' => 'default 281 (max-width: 1479px)',
-                '4' => 'large 281 (min-width: 1480px)',
-            ],
-        ];
-        yield '3 Column' => [
-            '3colDatabase.php',
-            [
-                '0' => 'mobile 734 (max-width: 480px)',
-                '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 307.692 (max-width: 991px)',
-                '3' => 'default 374.292 (max-width: 1479px)',
-                '4' => 'large 374.292 (min-width: 1480px)',
-            ],
-        ];
     }
 
     #[Test]
     #[DataProvider(methodName: 'imageScalingValuesDataProvider')]
     public function imageIsScaledCorrectly(string $phpDataSet, array $expectedValues): void
     {
-        $this->importPHPDataSet(__DIR__ . '/../Fixtures/container_example/Test/Fixtures/' . $phpDataSet);
+        $this->importPHPDataSet(__DIR__ . '/../Fixtures/base_example/Test/Fixtures/' . $phpDataSet);
 
         $request = new InternalRequest();
         $request = $request->withPageId(2);

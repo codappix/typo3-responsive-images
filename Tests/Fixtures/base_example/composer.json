@@ -1,0 +1,15 @@
+{
+    "name": "codappix/base_example",
+    "description": "Add a base example for frontend tests",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "typo3/cms-core": "*",
+        "codappix/responsive-images": "*"
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "base_example"
+        }
+    }
+}
