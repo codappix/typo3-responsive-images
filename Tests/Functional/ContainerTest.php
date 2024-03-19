@@ -24,6 +24,8 @@ namespace Codappix\ResponsiveImages\Tests;
  */
 
 use Codappix\Typo3PhpDatasets\TestingFramework;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Functional\Framework\Frontend\InternalRequest;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
@@ -133,11 +135,8 @@ class ContainerTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider imageScalingValuesDataProvider
-     */
+    #[Test]
+    #[DataProvider(methodName: 'imageScalingValuesDataProvider')]
     public function imageIsScaledCorrectly(string $phpDataSet, array $expectedValues): void
     {
         $this->importPHPDataSet(__DIR__ . '/../Fixtures/container_example/Test/Fixtures/' . $phpDataSet);
