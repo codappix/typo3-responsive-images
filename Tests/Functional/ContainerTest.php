@@ -42,6 +42,7 @@ class ContainerTest extends FunctionalTestCase
         $this->testExtensionsToLoad = [
             'b13/container',
             'codappix/responsive-images',
+            'typo3conf/ext/responsive_images/Tests/Fixtures/base_example',
             'typo3conf/ext/responsive_images/Tests/Fixtures/container_example',
         ];
 
@@ -56,8 +57,9 @@ class ContainerTest extends FunctionalTestCase
         $this->setUpFrontendRootPage(1, [
             'EXT:fluid_styled_content/Configuration/TypoScript/setup.typoscript',
             'EXT:responsive_images/Configuration/TypoScript/Setup.typoscript',
+            'EXT:base_example/Configuration/TypoScript/Setup.typoscript',
+            'EXT:base_example/Configuration/TypoScript/Rendering.typoscript',
             'EXT:container_example/Configuration/TypoScript/Setup.typoscript',
-            'EXT:container_example/Configuration/TypoScript/Rendering.typoscript',
         ]);
     }
 
