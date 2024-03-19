@@ -101,6 +101,16 @@ class ContainerTest extends FunctionalTestCase
                 '4' => 'large 748.584 (min-width: 1480px)',
             ],
         ];
+        yield '2 Column in 1 Column' => [
+            '1col2colDatabase.php',
+            [
+                '0' => 'mobile 734 (max-width: 480px)',
+                '1' => 'mobile 704 (max-width: 767px)',
+                '2' => 'tablet 462 (max-width: 991px)',
+                '3' => 'default 562 (max-width: 1479px)',
+                '4' => 'large 562 (min-width: 1480px)',
+            ],
+        ];
         yield '2 Column in 2 Column' => [
             '2col2colDatabase.php',
             [

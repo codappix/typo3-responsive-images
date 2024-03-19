@@ -62,7 +62,7 @@ final class Rootline
 
         foreach (array_reverse($this->rootline) as $contentElement) {
             if ($contentElement instanceof Container) {
-                $multiplier[] = $contentElement->getColumn((string) $this->contentElement->getColPos())->getMultiplier();
+                $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
             }
         }
 
@@ -100,7 +100,7 @@ final class Rootline
     {
         if (array_key_exists($contentElement->getColPos(), $this->backendLayout->getColumns())) {
             $this->backendLayout->setActiveColumn(
-                $this->backendLayout->getColumn((string) $contentElement->getColPos())
+                $this->backendLayout->getColumn($contentElement->getColPos())
             );
 
             return;

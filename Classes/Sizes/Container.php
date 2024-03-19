@@ -33,6 +33,8 @@ final class Container extends ContentElement
 
     private array $columns = [];
 
+    private Column $activeColumn;
+
     private readonly ConfigurationManager $configurationManager;
 
     public function __construct(array $data)
@@ -51,9 +53,19 @@ final class Container extends ContentElement
         return $this->columns;
     }
 
-    public function getColumn(string $columnPosition): Column
+    public function getColumn(int $columnPosition): Column
     {
         return $this->columns[$columnPosition];
+    }
+
+    public function setActiveColumn(Column $column): void
+    {
+        $this->activeColumn = $column;
+    }
+
+    public function getActiveColumn(): Column
+    {
+        return $this->activeColumn;
     }
 
     private function determineColumns(): void
