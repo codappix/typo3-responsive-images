@@ -56,7 +56,7 @@ final class BackendLayout
         return $this->columns;
     }
 
-    public function getColumn(string $columnPosition): Column
+    public function getColumn(int $columnPosition): Column
     {
         return $this->columns[$columnPosition];
     }
