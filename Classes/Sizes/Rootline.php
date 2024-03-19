@@ -27,6 +27,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Error\Exception;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
@@ -106,14 +107,16 @@ final class Rootline
             return;
         }
 
-        $parentContainer = $contentElement->getData('tx_container_parent');
-        assert(is_int($parentContainer));
-        $parent = $this->fetchContentElementFromDatabase($parentContainer);
+        if (ExtensionManagementUtility::isLoaded('b13/container')) {
+            $parentContainer = $contentElement->getData('tx_container_parent');
+            assert(is_int($parentContainer));
+            $parent = $this->fetchContentElementFromDatabase($parentContainer);
 
-        $this->rootline[] = $parent;
-        $this->parseRootline($parent);
+            $this->rootline[] = $parent;
+            $this->parseRootline($parent);
 
-        $contentElement->setParent($parent);
+            $contentElement->setParent($parent);
+        }
     }
 
     /**
