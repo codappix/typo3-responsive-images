@@ -25,3 +25,8 @@ plugin.tx_responsiveimages {
         }
     }
 }
+
+tt_content.example_container-2col-33-66 < lib.containerElement
+tt_content.example_container-2col-33-66 {
+    templateName = 2col-33-66
+}

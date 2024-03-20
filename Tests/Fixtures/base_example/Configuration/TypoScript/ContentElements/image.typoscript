@@ -1,9 +1,9 @@
 tt_content.image {
     templateRootPaths {
-        110 = EXT:container_example/Resources/Private/Templates/FluidStyledContent
+        110 = EXT:base_example/Resources/Private/Templates/FluidStyledContent
     }
     partialRootPaths {
-        110 = EXT:container_example/Resources/Private/Partials/FluidStyledContent
+        110 = EXT:base_example/Resources/Private/Partials/FluidStyledContent
     }
 
     dataProcessing {
