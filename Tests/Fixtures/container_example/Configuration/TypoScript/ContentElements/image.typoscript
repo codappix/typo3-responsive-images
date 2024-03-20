@@ -1,0 +1,35 @@
+tt_content.image {
+    templateRootPaths {
+        110 = EXT:container_example/Resources/Private/Templates/FluidStyledContent
+    }
+    partialRootPaths {
+        110 = EXT:container_example/Resources/Private/Partials/FluidStyledContent
+    }
+
+    dataProcessing {
+        20 >
+        20 = Codappix\ResponsiveImages\DataProcessing\ResponsiveImagesProcessor
+        20 {
+            fieldName = image
+            filesDataKey = files
+        }
+    }
+}
+
+plugin.tx_responsiveimages {
+    settings {
+        contentelements {
+            image {
+                image {
+                    multiplier {
+                        xs = 1
+                        sm = 1
+                        md = 1
+                        lg = 1
+                        xl = 1
+                    }
+                }
+            }
+        }
+    }
+}
