@@ -1,0 +1,31 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:if condition="{image}">
+    <figure>
+        <f:link.typolink parameter="{image.media.link}">
+            <picture>
+                <f:for each="{image.sizes}" as="size" iteration="sizeIterator">
+                    <source srcset="{f:uri.image(image: image.media, maxWidth: size.size, cropVariant: size.breakpoint.cropVariant)}"
+                        media="{size.breakpoint.mediaQuery}"
+                    >
+
+                    <f:if condition="{sizeIterator.isLast}">
+                        <img class="img-responsive"
+                            src="{f:uri.image(image: image.media, maxWidth: size.size, cropVariant: size.breakpoint.cropVariant)}"
+                            alt="{image.media.alternative}"
+                            title="{image.media.title}"
+                            loading="lazy"
+                        >
+                    </f:if>
+                </f:for>
+            </picture>
+        </f:link.typolink>
+
+        <f:if condition="{image.media.description}">
+            <figcaption>
+                {image.media.description}
+            </figcaption>
+        </f:if>
+    </figure>
+</f:if>
+</html>
