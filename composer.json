@@ -1,5 +1,5 @@
 {
-    "name": "codappix/responsive-images",
+    "name": "codappix/typo3-responsive-images",
     "description": "TYPO3 Extension to generate perfectly sized responsive images",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",

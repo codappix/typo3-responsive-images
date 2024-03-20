@@ -41,7 +41,7 @@ class ContainerTest extends FunctionalTestCase
 
         $this->testExtensionsToLoad = [
             'b13/container',
-            'codappix/responsive-images',
+            'codappix/typo3-responsive-images',
             'typo3conf/ext/responsive_images/Tests/Fixtures/base_example',
             'typo3conf/ext/responsive_images/Tests/Fixtures/container_example',
         ];
