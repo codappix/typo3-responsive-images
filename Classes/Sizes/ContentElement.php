@@ -23,24 +23,8 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
-use TYPO3\CMS\Core\Error\Exception;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
-/**
- * This class represents the content elements in the rootline of the current
- * content element which is rendered.
- */
-class ContentElement implements ContentElementInterface
+class ContentElement extends AbstractContentElement
 {
-    protected readonly ConfigurationManager $configurationManager;
-
-    protected readonly string $contentType;
-
-    protected readonly int $colPos;
-
-    protected ContentElementInterface $parent;
-
     /**
      * @var float[]
      */
@@ -52,51 +36,12 @@ class ContentElement implements ContentElementInterface
     private array $sizes = [];
 
     public function __construct(
-        private readonly array $data
+        array $data,
+        private readonly string $fieldName
     ) {
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-
-        $this->contentType = $data['CType'];
-        $this->colPos = $data['colPos'];
+        parent::__construct($data);
 
         $this->readConfiguration();
-    }
-
-    public function getData(?string $dataIdentifier = null): mixed
-    {
-        if ($dataIdentifier === null) {
-            return $this->data;
-        }
-
-        if (isset($this->data[$dataIdentifier]) === false) {
-            throw new Exception('No data found for key ' . $dataIdentifier . ' in $this->data.');
-        }
-
-        return $this->data[$dataIdentifier];
-    }
-
-    public function getContentType(): string
-    {
-        return $this->contentType;
-    }
-
-    public function getColPos(): int
-    {
-        return $this->colPos;
-    }
-
-    public function setParent(ContentElementInterface $contentElement): void
-    {
-        if ($contentElement instanceof Container) {
-            $contentElement->setActiveColumn($contentElement->getColumn($this->colPos));
-        }
-
-        $this->parent = $contentElement;
-    }
-
-    public function getParent(): ?ContentElementInterface
-    {
-        return $this->parent;
     }
 
     public function getSizes(): array
@@ -111,14 +56,10 @@ class ContentElement implements ContentElementInterface
 
     public function readConfiguration(): void
     {
-        if (get_class($this) !== self::class) {
-            return;
-        }
-
         $configurationPath = implode('.', [
             'contentelements',
             $this->contentType,
-            'image',
+            $this->fieldName,
         ]);
 
         $configuration = $this->configurationManager->getByPath($configurationPath);

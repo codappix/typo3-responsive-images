@@ -10,8 +10,6 @@ namespace Codappix\ResponsiveImages\Sizes;
  */
 interface ContentElementInterface
 {
-    public function __construct(array $data);
-
     public function getData(?string $dataIdentifier = null): mixed;
 
     public function getContentType(): string;

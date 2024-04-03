@@ -25,10 +25,8 @@ namespace Codappix\ResponsiveImages\Sizes;
 
 use Codappix\ResponsiveImages\Sizes\BackendLayout\Column;
 
-final class Container extends ContentElement
+final class Container extends AbstractContentElement
 {
-    private readonly string $layout;
-
     private array $columns = [];
 
     private Column $activeColumn;
@@ -36,8 +34,6 @@ final class Container extends ContentElement
     public function __construct(array $data)
     {
         parent::__construct($data);
-
-        $this->layout = $data['CType'];
 
         $this->determineColumns();
     }
@@ -81,7 +77,7 @@ final class Container extends ContentElement
     private function determineColumns(): void
     {
         $sizesPath = implode('.', [
-            $this->layout,
+            $this->contentType,
             'columns',
         ]);
 

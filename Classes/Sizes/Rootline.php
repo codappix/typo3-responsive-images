@@ -41,9 +41,12 @@ final class Rootline
 
     private array $finalSizes = [];
 
-    public function __construct(array $data)
+    private string $fieldName;
+
+    public function __construct(array $data, string $fieldName)
     {
         $this->determineBackendLayout();
+        $this->fieldName = $fieldName;
         $this->contentElement = $this->determineContentElement($data);
 
         $this->determineRootline();
@@ -72,7 +75,7 @@ final class Rootline
             return new Container($data);
         }
 
-        return new ContentElement($data);
+        return new ContentElement($data, $this->fieldName);
     }
 
     private function determineRootline(): void
@@ -131,10 +134,6 @@ final class Rootline
     {
         [$sizes, $multiplier] = $this->getSizesAndMultiplierFromRootline();
 
-        if (empty($sizes)) {
-            $sizes = $this->backendLayout->getSizes();
-        }
-
         $this->calculateFinalSizes($sizes, $multiplier);
     }
 
@@ -144,13 +143,17 @@ final class Rootline
         $sizes = [];
 
         foreach ($this->rootline as $contentElement) {
-            if ($contentElement instanceof ContentElement) {
+            if ($contentElement instanceof ContentElementInterface) {
                 $sizes = $contentElement->getSizes();
                 if (!empty($sizes)) {
                     break;
                 }
                 $multiplier[] = $contentElement->getMultiplier();
             }
+        }
+
+        if (empty($sizes)) {
+            $sizes = $this->backendLayout->getSizes();
         }
 
         return [$sizes, $multiplier];

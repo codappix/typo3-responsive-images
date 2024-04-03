@@ -64,6 +64,11 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             $processorConfiguration,
             'files'
         );
+        $filesName = (string) $cObj->stdWrapValue(
+            'fieldName',
+            $processorConfiguration,
+            'image'
+        );
         if (isset($processedData[$filesDataKey]) && is_array($processedData[$filesDataKey])) {
             $this->files = $processedData[$filesDataKey];
         } else {
@@ -71,7 +76,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = (new Rootline($processedData['data']))->getFinalSizes();
+        $this->contentElementSizes = (new Rootline($processedData['data'], $filesName))->getFinalSizes();
         $this->calculateFileDimensions();
 
         $targetFieldName = (string) $cObj->stdWrapValue(
