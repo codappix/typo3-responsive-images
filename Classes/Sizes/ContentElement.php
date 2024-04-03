@@ -23,7 +23,9 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
+use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Error\Exception;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class represents the content elements in the rootline of the current
@@ -31,17 +33,33 @@ use TYPO3\CMS\Core\Error\Exception;
  */
 class ContentElement implements ContentElementInterface
 {
+    protected readonly ConfigurationManager $configurationManager;
+
     protected readonly string $contentType;
 
     protected readonly int $colPos;
 
     protected ContentElementInterface $parent;
 
+    /**
+     * @var float[]
+     */
+    private array $multiplier = [];
+
+    /**
+     * @var int[]
+     */
+    private array $sizes = [];
+
     public function __construct(
         private readonly array $data
     ) {
+        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+
         $this->contentType = $data['CType'];
         $this->colPos = $data['colPos'];
+
+        $this->readConfiguration();
     }
 
     public function getData(?string $dataIdentifier = null): mixed
@@ -79,5 +97,40 @@ class ContentElement implements ContentElementInterface
     public function getParent(): ?ContentElementInterface
     {
         return $this->parent;
+    }
+
+    public function getSizes(): array
+    {
+        return $this->sizes;
+    }
+
+    public function getMultiplier(): array
+    {
+        return $this->multiplier;
+    }
+
+    public function readConfiguration(): void
+    {
+        if (get_class($this) !== self::class) {
+            return;
+        }
+
+        $configurationPath = implode('.', [
+            'contentelements',
+            $this->contentType,
+            'image',
+        ]);
+
+        $configuration = $this->configurationManager->getByPath($configurationPath);
+
+        if (is_array($configuration)) {
+            if (isset($configuration['multiplier'])) {
+                $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
+            }
+
+            if (isset($configuration['sizes'])) {
+                $this->sizes = array_map(static fn ($size): int => (int) $size, $configuration['sizes']);
+            }
+        }
     }
 }

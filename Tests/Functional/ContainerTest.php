@@ -135,6 +135,46 @@ class ContainerTest extends FunctionalTestCase
                 '4' => 'large 374.292 (min-width: 1480px)',
             ],
         ];
+        yield '1 Column Full Width' => [
+            '1colFullWidthDatabase.php',
+            [
+                '0' => 'mobile 1254 (max-width: 480px)',
+                '1' => 'mobile 1203 (max-width: 767px)',
+                '2' => 'tablet 1578 (max-width: 991px)',
+                '3' => 'default 1920 (max-width: 1479px)',
+                '4' => 'large 1920 (min-width: 1480px)',
+            ],
+        ];
+        yield '2 Column in 1 Column Full Width' => [
+            '1col2colFullWidthDatabase.php',
+            [
+                '0' => 'mobile 1254 (max-width: 480px)',
+                '1' => 'mobile 1203 (max-width: 767px)',
+                '2' => 'tablet 789 (max-width: 991px)',
+                '3' => 'default 960 (max-width: 1479px)',
+                '4' => 'large 960 (min-width: 1480px)',
+            ],
+        ];
+        yield '0 Column with ImageFixWidth' => [
+            '0colImageFixWidthDatabase.php',
+            [
+                '0' => 'mobile 600 (max-width: 480px)',
+                '1' => 'mobile 900 (max-width: 767px)',
+                '2' => 'tablet 1200 (max-width: 991px)',
+                '3' => 'default 1600 (max-width: 1479px)',
+                '4' => 'large 1600 (min-width: 1480px)',
+            ],
+        ];
+        yield '3 Column with ImageFixWidth' => [
+            '3colImageFixWidthDatabase.php',
+            [
+                '0' => 'mobile 600 (max-width: 480px)',
+                '1' => 'mobile 900 (max-width: 767px)',
+                '2' => 'tablet 1200 (max-width: 991px)',
+                '3' => 'default 1600 (max-width: 1479px)',
+                '4' => 'large 1600 (min-width: 1480px)',
+            ],
+        ];
     }
 
     #[Test]

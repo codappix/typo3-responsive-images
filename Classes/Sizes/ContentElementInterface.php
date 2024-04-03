@@ -21,4 +21,8 @@ interface ContentElementInterface
     public function setParent(self $contentElement): void;
 
     public function getParent(): ?self;
+
+    public function getSizes(): array;
+
+    public function getMultiplier(): array;
 }

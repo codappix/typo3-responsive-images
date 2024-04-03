@@ -55,21 +55,6 @@ final class Rootline
         return $this->finalSizes;
     }
 
-    public function getMultiplier(): array
-    {
-        $multiplier = [
-            $this->backendLayout->getActiveColumn()->getMultiplier(),
-        ];
-
-        foreach (array_reverse($this->rootline) as $contentElement) {
-            if ($contentElement instanceof Container) {
-                $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
-            }
-        }
-
-        return $multiplier;
-    }
-
     private function determineBackendLayout(): void
     {
         $typoscriptFrontendController = $GLOBALS['TSFE'];
@@ -144,10 +129,35 @@ final class Rootline
 
     private function calculateSizes(): void
     {
-        $sizes = $this->backendLayout->getSizes();
+        [$sizes, $multiplier] = $this->getSizesAndMultiplierFromRootline();
 
-        $multiplier = $this->getMultiplier();
+        if (empty($sizes)) {
+            $sizes = $this->backendLayout->getSizes();
+        }
 
+        $this->calculateFinalSizes($sizes, $multiplier);
+    }
+
+    private function getSizesAndMultiplierFromRootline(): array
+    {
+        $multiplier = [];
+        $sizes = [];
+
+        foreach ($this->rootline as $contentElement) {
+            if ($contentElement instanceof ContentElement) {
+                $sizes = $contentElement->getSizes();
+                if (!empty($sizes)) {
+                    break;
+                }
+                $multiplier[] = $contentElement->getMultiplier();
+            }
+        }
+
+        return [$sizes, $multiplier];
+    }
+
+    private function calculateFinalSizes(array $sizes, array $multiplier): void
+    {
         foreach ($sizes as $sizeName => &$size) {
             foreach ($multiplier as $multiplierItem) {
                 if (isset($multiplierItem[$sizeName]) === false) {

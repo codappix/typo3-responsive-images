@@ -1,0 +1,22 @@
+plugin.tx_responsiveimages {
+    settings {
+        example_container-1col-full-width {
+            columns {
+                101 {
+                    sizes {
+                        xs = 1254
+                        sm = 1203
+                        md = 1578
+                        lg = 1920
+                        xl = 1920
+                    }
+                }
+            }
+        }
+    }
+}
+
+tt_content.example_container-1col-full-width < lib.containerElement
+tt_content.example_container-1col-full-width {
+    templateName = 1col
+}
