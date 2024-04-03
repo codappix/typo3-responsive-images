@@ -1,2 +1,9 @@
 page = PAGE
-page.10 < styles.content.get
+page {
+    10 < styles.content.get
+
+    config {
+       disableAllHeaderCode = 1
+       admPanel = 0
+    }
+}
