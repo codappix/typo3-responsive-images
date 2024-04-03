@@ -23,6 +23,7 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
+use B13\Container\Tca\Registry;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -71,7 +72,10 @@ final class Rootline
 
     private function determineContentElement(array $data): ContentElementInterface
     {
-        if (str_contains((string) $data['CType'], '_container-')) {
+        if (
+            class_exists(Registry::class)
+            && GeneralUtility::makeInstance(Registry::class)->isContainerElement($data['CType'])
+        ) {
             return new Container($data);
         }
 
