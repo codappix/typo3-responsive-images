@@ -77,6 +77,7 @@ final class Container extends AbstractContentElement
     private function determineColumns(): void
     {
         $sizesPath = implode('.', [
+            'container',
             $this->contentType,
             'columns',
         ]);
