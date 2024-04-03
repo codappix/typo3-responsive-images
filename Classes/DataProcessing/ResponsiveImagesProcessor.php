@@ -64,7 +64,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             $processorConfiguration,
             'files'
         );
-        $filesName = (string) $cObj->stdWrapValue(
+        $fieldName = (string) $cObj->stdWrapValue(
             'fieldName',
             $processorConfiguration,
             'image'
