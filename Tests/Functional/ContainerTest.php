@@ -72,7 +72,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 924 (max-width: 991px)',
                 '3' => 'default 1124 (max-width: 1479px)',
-                '4' => 'large 1124 (min-width: 1480px)',
+                '4' => 'large 562 (min-width: 1480px)',
             ],
         ];
         yield '1 Column' => [
@@ -82,7 +82,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 924 (max-width: 991px)',
                 '3' => 'default 1124 (max-width: 1479px)',
-                '4' => 'large 1124 (min-width: 1480px)',
+                '4' => 'large 562 (min-width: 1480px)',
             ],
         ];
         yield '2 Column 50-50' => [
@@ -92,7 +92,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 462 (max-width: 991px)',
                 '3' => 'default 562 (max-width: 1479px)',
-                '4' => 'large 562 (min-width: 1480px)',
+                '4' => 'large 281 (min-width: 1480px)',
             ],
         ];
         yield '2 Column 66-33' => [
@@ -102,7 +102,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 615.384 (max-width: 991px)',
                 '3' => 'default 748.584 (max-width: 1479px)',
-                '4' => 'large 748.584 (min-width: 1480px)',
+                '4' => 'large 374.292 (min-width: 1480px)',
             ],
         ];
         yield '2 Column in 1 Column' => [
@@ -112,7 +112,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 462 (max-width: 991px)',
                 '3' => 'default 562 (max-width: 1479px)',
-                '4' => 'large 562 (min-width: 1480px)',
+                '4' => 'large 281 (min-width: 1480px)',
             ],
         ];
         yield '2 Column in 2 Column' => [
@@ -122,7 +122,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 231 (max-width: 991px)',
                 '3' => 'default 281 (max-width: 1479px)',
-                '4' => 'large 281 (min-width: 1480px)',
+                '4' => 'large 140.5 (min-width: 1480px)',
             ],
         ];
         yield '3 Column' => [
@@ -132,7 +132,47 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 307.692 (max-width: 991px)',
                 '3' => 'default 374.292 (max-width: 1479px)',
-                '4' => 'large 374.292 (min-width: 1480px)',
+                '4' => 'large 187.146 (min-width: 1480px)',
+            ],
+        ];
+        yield '1 Column Full Width' => [
+            '1colFullWidthDatabase.php',
+            [
+                '0' => 'mobile 1254 (max-width: 480px)',
+                '1' => 'mobile 1203 (max-width: 767px)',
+                '2' => 'tablet 1578 (max-width: 991px)',
+                '3' => 'default 1920 (max-width: 1479px)',
+                '4' => 'large 960 (min-width: 1480px)',
+            ],
+        ];
+        yield '2 Column in 1 Column Full Width' => [
+            '1col2colFullWidthDatabase.php',
+            [
+                '0' => 'mobile 1254 (max-width: 480px)',
+                '1' => 'mobile 1203 (max-width: 767px)',
+                '2' => 'tablet 789 (max-width: 991px)',
+                '3' => 'default 960 (max-width: 1479px)',
+                '4' => 'large 480 (min-width: 1480px)',
+            ],
+        ];
+        yield '0 Column with ImageFixWidth' => [
+            '0colImageFixWidthDatabase.php',
+            [
+                '0' => 'mobile 600 (max-width: 480px)',
+                '1' => 'mobile 900 (max-width: 767px)',
+                '2' => 'tablet 1200 (max-width: 991px)',
+                '3' => 'default 1600 (max-width: 1479px)',
+                '4' => 'large 1600 (min-width: 1480px)',
+            ],
+        ];
+        yield '3 Column with ImageFixWidth' => [
+            '3colImageFixWidthDatabase.php',
+            [
+                '0' => 'mobile 600 (max-width: 480px)',
+                '1' => 'mobile 900 (max-width: 767px)',
+                '2' => 'tablet 1200 (max-width: 991px)',
+                '3' => 'default 1600 (max-width: 1479px)',
+                '4' => 'large 1600 (min-width: 1480px)',
             ],
         ];
     }

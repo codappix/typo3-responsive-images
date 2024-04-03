@@ -1,4 +1,5 @@
-tt_content.image {
+tt_content.imageFixWidth < tt_content.image
+tt_content.imageFixWidth {
     templateRootPaths {
         110 = EXT:base_example/Resources/Private/Templates/FluidStyledContent
     }
@@ -19,14 +20,14 @@ tt_content.image {
 plugin.tx_responsiveimages {
     settings {
         contentelements {
-            image {
+            imageFixWidth {
                 image {
-                    multiplier {
-                        xs = 1
-                        sm = 1
-                        md = 1
-                        lg = 1
-                        xl = 0.5
+                    sizes {
+                        xs = 600
+                        sm = 900
+                        md = 1200
+                        lg = 1600
+                        xl = 1600
                     }
                 }
             }

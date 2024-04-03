@@ -25,9 +25,7 @@ namespace Codappix\ResponsiveImages\DataProcessing;
 
 use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
 use Codappix\ResponsiveImages\Sizes\Breakpoint;
-use Codappix\ResponsiveImages\Sizes\Multiplier;
 use Codappix\ResponsiveImages\Sizes\Rootline;
-use TYPO3\CMS\Core\Error\Exception;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -38,22 +36,13 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     private readonly ConfigurationManager $configurationManager;
 
     /**
-     * The processor configuration
-     */
-    private array $processorConfiguration;
-
-    /**
      * @var FileInterface[]
      */
     private array $files = [];
 
     private array $calculatedFiles = [];
 
-    private array $contentElementData = [];
-
     private array $contentElementSizes = [];
-
-    private array $contentElementFieldConfiguration = [];
 
     public function __construct()
     {
@@ -69,13 +58,16 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         if (isset($processorConfiguration['if.']) && !$cObj->checkIf($processorConfiguration['if.'])) {
             return $processedData;
         }
-        $this->processorConfiguration = $processorConfiguration;
-        $this->contentElementData = $processedData['data'];
 
         $filesDataKey = (string) $cObj->stdWrapValue(
             'filesDataKey',
             $processorConfiguration,
             'files'
+        );
+        $fieldName = (string) $cObj->stdWrapValue(
+            'fieldName',
+            $processorConfiguration,
+            'image'
         );
         if (isset($processedData[$filesDataKey]) && is_array($processedData[$filesDataKey])) {
             $this->files = $processedData[$filesDataKey];
@@ -84,8 +76,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = (new Rootline($processedData['data']))->getFinalSizes();
-        $this->fetchContentElementFieldConfiguration();
+        $this->contentElementSizes = (new Rootline($processedData['data'], $fieldName))->getFinalSizes();
         $this->calculateFileDimensions();
 
         $targetFieldName = (string) $cObj->stdWrapValue(
@@ -97,23 +88,6 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         $processedData[$targetFieldName] = $this->calculatedFiles;
 
         return $processedData;
-    }
-
-    private function fetchContentElementFieldConfiguration(): void
-    {
-        $contentElementFieldPath = implode('.', [
-            'contentelements',
-            $this->contentElementData['CType'],
-            $this->processorConfiguration['fieldName'],
-        ]);
-
-        if ($this->configurationManager->isValidPath($contentElementFieldPath) === false) {
-            throw new Exception("Field configuration '" . $contentElementFieldPath . "' missing.");
-        }
-
-        if (is_array($this->configurationManager->getByPath($contentElementFieldPath))) {
-            $this->contentElementFieldConfiguration = $this->configurationManager->getByPath($contentElementFieldPath);
-        }
     }
 
     private function calculateFileDimensions(): void
@@ -131,7 +105,6 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     private function calculateFileDimensionForBreakpoints(): array
     {
         $fileDimensions = [];
-        $fieldConfiguration = $this->contentElementFieldConfiguration;
 
         $breakpoints = $this->getBreakpoints();
 
@@ -141,27 +114,10 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
                 continue;
             }
 
-            $contentElementSize = $this->contentElementSizes[$breakpoint->getIdentifier()];
             $fileDimensions[$breakpoint->getIdentifier()] = [
                 'breakpoint' => $breakpoint,
+                'size' => $this->contentElementSizes[$breakpoint->getIdentifier()],
             ];
-
-            if (isset($fieldConfiguration['multiplier'])) {
-                $fileDimensions[$breakpoint->getIdentifier()]['size'] = $contentElementSize
-                    * Multiplier::parse(
-                        $fieldConfiguration['multiplier'][$breakpoint->getIdentifier()]
-                    );
-
-                continue;
-            }
-
-            if (isset($fieldConfiguration['sizes'])) {
-                $fileDimensions[$breakpoint->getIdentifier()]['size'] = Multiplier::parse(
-                    $fieldConfiguration['sizes'][$breakpoint->getIdentifier()]
-                );
-
-                continue;
-            }
         }
 
         return $fileDimensions;

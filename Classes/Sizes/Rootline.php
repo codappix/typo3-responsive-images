@@ -42,9 +42,12 @@ final class Rootline
 
     private array $finalSizes = [];
 
-    public function __construct(array $data)
+    private string $fieldName;
+
+    public function __construct(array $data, string $fieldName)
     {
         $this->determineBackendLayout();
+        $this->fieldName = $fieldName;
         $this->contentElement = $this->determineContentElement($data);
 
         $this->determineRootline();
@@ -54,21 +57,6 @@ final class Rootline
     public function getFinalSizes(): array
     {
         return $this->finalSizes;
-    }
-
-    public function getMultiplier(): array
-    {
-        $multiplier = [
-            $this->backendLayout->getActiveColumn()->getMultiplier(),
-        ];
-
-        foreach (array_reverse($this->rootline) as $contentElement) {
-            if ($contentElement instanceof Container) {
-                $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
-            }
-        }
-
-        return $multiplier;
     }
 
     private function determineBackendLayout(): void
@@ -91,7 +79,7 @@ final class Rootline
             return new Container($data);
         }
 
-        return new ContentElement($data);
+        return new ContentElement($data, $this->fieldName);
     }
 
     private function determineRootline(): void
@@ -148,10 +136,35 @@ final class Rootline
 
     private function calculateSizes(): void
     {
-        $sizes = $this->backendLayout->getSizes();
+        [$sizes, $multiplier] = $this->getSizesAndMultiplierFromRootline();
 
-        $multiplier = $this->getMultiplier();
+        $this->calculateFinalSizes($sizes, $multiplier);
+    }
 
+    private function getSizesAndMultiplierFromRootline(): array
+    {
+        $multiplier = [];
+        $sizes = [];
+
+        foreach ($this->rootline as $contentElement) {
+            if ($contentElement instanceof ContentElementInterface) {
+                $sizes = $contentElement->getSizes();
+                if (!empty($sizes)) {
+                    break;
+                }
+                $multiplier[] = $contentElement->getMultiplier();
+            }
+        }
+
+        if (empty($sizes)) {
+            $sizes = $this->backendLayout->getSizes();
+        }
+
+        return [$sizes, $multiplier];
+    }
+
+    private function calculateFinalSizes(array $sizes, array $multiplier): void
+    {
         foreach ($sizes as $sizeName => &$size) {
             foreach ($multiplier as $multiplierItem) {
                 if (isset($multiplierItem[$sizeName]) === false) {
