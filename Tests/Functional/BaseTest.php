@@ -69,7 +69,7 @@ class BaseTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 924 (max-width: 991px)',
                 '3' => 'default 1124 (max-width: 1479px)',
-                '4' => 'large 1124 (min-width: 1480px)',
+                '4' => 'large 562 (min-width: 1480px)',
             ],
         ];
         yield '0 Column with ImageFixWidth' => [
