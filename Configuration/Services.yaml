@@ -28,6 +28,10 @@ services:
 
     Codappix\ResponsiveImages\DataProcessing\ResponsiveImagesProcessor:
         public: true
+        tags:
+            -
+                name: 'data.processor'
+                identifier: 'responsive-images'
 
     Codappix\ResponsiveImages\Configuration\ConfigurationManager:
         arguments:
