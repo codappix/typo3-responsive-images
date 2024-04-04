@@ -100,9 +100,9 @@ class ContainerTest extends FunctionalTestCase
             [
                 '0' => 'mobile 734 (max-width: 480px)',
                 '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 615.384 (max-width: 991px)',
-                '3' => 'default 748.584 (max-width: 1479px)',
-                '4' => 'large 374.292 (min-width: 1480px)',
+                '2' => 'tablet 616 (max-width: 991px)',
+                '3' => 'default 749 (max-width: 1479px)',
+                '4' => 'large 375 (min-width: 1480px)',
             ],
         ];
         yield '2 Column in 1 Column' => [
@@ -122,7 +122,7 @@ class ContainerTest extends FunctionalTestCase
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 231 (max-width: 991px)',
                 '3' => 'default 281 (max-width: 1479px)',
-                '4' => 'large 140.5 (min-width: 1480px)',
+                '4' => 'large 141 (min-width: 1480px)',
             ],
         ];
         yield '3 Column' => [
@@ -130,9 +130,9 @@ class ContainerTest extends FunctionalTestCase
             [
                 '0' => 'mobile 734 (max-width: 480px)',
                 '1' => 'mobile 704 (max-width: 767px)',
-                '2' => 'tablet 307.692 (max-width: 991px)',
-                '3' => 'default 374.292 (max-width: 1479px)',
-                '4' => 'large 187.146 (min-width: 1480px)',
+                '2' => 'tablet 308 (max-width: 991px)',
+                '3' => 'default 375 (max-width: 1479px)',
+                '4' => 'large 188 (min-width: 1480px)',
             ],
         ];
         yield '1 Column Full Width' => [
