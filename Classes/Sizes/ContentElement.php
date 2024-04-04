@@ -44,14 +44,20 @@ class ContentElement extends AbstractContentElement
         $this->readConfiguration();
     }
 
-    public function getSizes(): array
-    {
-        return $this->sizes;
-    }
-
+    /**
+     * @return float[]
+     */
     public function getMultiplier(): array
     {
         return $this->multiplier;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSizes(): array
+    {
+        return $this->sizes;
     }
 
     public function readConfiguration(): void
@@ -62,16 +68,9 @@ class ContentElement extends AbstractContentElement
             $this->fieldName,
         ]);
 
-        $configuration = $this->configurationManager->getByPath($configurationPath);
+        [$multiplier, $sizes] = $this->readConfigurationByPath($configurationPath);
 
-        if (is_array($configuration)) {
-            if (isset($configuration['multiplier'])) {
-                $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
-            }
-
-            if (isset($configuration['sizes'])) {
-                $this->sizes = array_map(static fn ($size): int => (int) $size, $configuration['sizes']);
-            }
-        }
+        $this->multiplier = $multiplier;
+        $this->sizes = $sizes;
     }
 }

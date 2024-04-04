@@ -1,0 +1,41 @@
+plugin.tx_responsiveimages {
+    settings {
+        container {
+            example_container-2col-50-50-with-container-multiplier {
+                columns {
+                    101 {
+                        multiplier {
+                            xs = 1
+                            sm = 1
+                            md = 0,5
+                            lg = 0,5
+                            xl = 0,5
+                        }
+                    }
+
+                    102 {
+                        multiplier {
+                            xs = 1
+                            sm = 1
+                            md = 0,5
+                            lg = 0,5
+                            xl = 0,5
+                        }
+                    }
+                }
+                multiplier {
+                    xs = 0.8
+                    sm = 0.8
+                    md = 0.8
+                    lg = 0.8
+                    xl = 0.8
+                }
+            }
+        }
+    }
+}
+
+tt_content.example_container-2col-50-50-with-container-multiplier < lib.containerElement
+tt_content.example_container-2col-50-50-with-container-multiplier {
+    templateName = 2col-50-50
+}

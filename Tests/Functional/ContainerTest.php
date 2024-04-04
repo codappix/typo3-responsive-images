@@ -175,6 +175,26 @@ class ContainerTest extends FunctionalTestCase
                 '4' => 'large 1600 (min-width: 1480px)',
             ],
         ];
+        yield '2 Column with Container Size in 1 Column' => [
+            '1col2colWidthContainerSizeDatabase.php',
+            [
+                '0' => 'mobile 600 (max-width: 480px)',
+                '1' => 'mobile 900 (max-width: 767px)',
+                '2' => 'tablet 600 (max-width: 991px)',
+                '3' => 'default 750 (max-width: 1479px)',
+                '4' => 'large 450 (min-width: 1480px)',
+            ],
+        ];
+        yield '2 Column with Container Multiplier in 1 Column' => [
+            '1col2colWidthContainerMultiplierDatabase.php',
+            [
+                '0' => 'mobile 588 (max-width: 480px)',
+                '1' => 'mobile 564 (max-width: 767px)',
+                '2' => 'tablet 370 (max-width: 991px)',
+                '3' => 'default 450 (max-width: 1479px)',
+                '4' => 'large 225 (min-width: 1480px)',
+            ],
+        ];
     }
 
     #[Test]

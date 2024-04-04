@@ -84,4 +84,24 @@ abstract class AbstractContentElement implements ContentElementInterface
 
         $this->parent = $contentElement;
     }
+
+    protected function readConfigurationByPath(string $configurationPath): array
+    {
+        $configuration = $this->configurationManager->getByPath($configurationPath);
+
+        $multiplier = [];
+        $sizes = [];
+
+        if (is_array($configuration)) {
+            if (isset($configuration['multiplier'])) {
+                $multiplier = array_map(static fn($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
+            }
+
+            if (isset($configuration['sizes'])) {
+                $sizes = array_map(static fn($size): int => (int)$size, $configuration['sizes']);
+            }
+        }
+
+        return [$multiplier, $sizes];
+    }
 }

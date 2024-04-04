@@ -148,10 +148,20 @@ final class Rootline
 
         foreach ($this->rootline as $contentElement) {
             if ($contentElement instanceof ContentElementInterface) {
+                if ($contentElement instanceof Container) {
+                    $sizes = $contentElement->getActiveColumn()->getSizes();
+                    if (!empty($sizes)) {
+                        break;
+                    }
+
+                    $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
+                }
+
                 $sizes = $contentElement->getSizes();
                 if (!empty($sizes)) {
                     break;
                 }
+
                 $multiplier[] = $contentElement->getMultiplier();
             }
         }

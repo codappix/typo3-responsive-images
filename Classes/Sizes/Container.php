@@ -27,6 +27,16 @@ use Codappix\ResponsiveImages\Sizes\BackendLayout\Column;
 
 final class Container extends AbstractContentElement
 {
+    /**
+     * @var float[]
+     */
+    private array $multiplier = [];
+
+    /**
+     * @var int[]
+     */
+    private array $sizes = [];
+
     private array $columns = [];
 
     private Column $activeColumn;
@@ -35,6 +45,7 @@ final class Container extends AbstractContentElement
     {
         parent::__construct($data);
 
+        $this->readConfiguration();
         $this->determineColumns();
     }
 
@@ -63,7 +74,7 @@ final class Container extends AbstractContentElement
      */
     public function getMultiplier(): array
     {
-        return $this->getActiveColumn()->getMultiplier();
+        return $this->multiplier;
     }
 
     /**
@@ -71,7 +82,21 @@ final class Container extends AbstractContentElement
      */
     public function getSizes(): array
     {
-        return $this->getActiveColumn()->getSizes();
+        return $this->sizes;
+    }
+
+    public function readConfiguration(): void
+    {
+        $configurationPath = implode('.', [
+            'container',
+            $this->contentType,
+        ]);
+
+
+        [$multiplier, $sizes] = $this->readConfigurationByPath($configurationPath);
+
+        $this->multiplier = $multiplier;
+        $this->sizes = $sizes;
     }
 
     private function determineColumns(): void
@@ -83,6 +108,7 @@ final class Container extends AbstractContentElement
         ]);
 
         $columnsByPath = $this->configurationManager->getByPath($sizesPath);
+
         if (is_iterable($columnsByPath)) {
             foreach ($columnsByPath as $columnIdentifier => $columnData) {
                 $this->columns[$columnIdentifier] = new Column($columnIdentifier, $columnData);
