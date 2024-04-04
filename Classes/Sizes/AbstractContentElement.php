@@ -94,11 +94,11 @@ abstract class AbstractContentElement implements ContentElementInterface
 
         if (is_array($configuration)) {
             if (isset($configuration['multiplier'])) {
-                $multiplier = array_map(static fn($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
+                $multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
             }
 
             if (isset($configuration['sizes'])) {
-                $sizes = array_map(static fn($size): int => (int)$size, $configuration['sizes']);
+                $sizes = array_map(static fn ($size): int => (int) $size, $configuration['sizes']);
             }
         }
 

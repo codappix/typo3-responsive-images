@@ -59,6 +59,32 @@ final class Rootline
         return $this->finalSizes;
     }
 
+    public function getSizesAndMultiplierFromContentElement(
+        mixed $contentElement,
+        array $sizes,
+        array $multiplier
+    ): array {
+        if ($contentElement instanceof ContentElementInterface) {
+            if ($contentElement instanceof Container) {
+                $sizes = $contentElement->getActiveColumn()->getSizes();
+                if (!empty($sizes)) {
+                    return [$sizes, $multiplier];
+                }
+
+                $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
+            }
+
+            $sizes = $contentElement->getSizes();
+            if (!empty($sizes)) {
+                return [$sizes, $multiplier];
+            }
+
+            $multiplier[] = $contentElement->getMultiplier();
+        }
+
+        return [$sizes, $multiplier];
+    }
+
     private function determineBackendLayout(): void
     {
         $typoscriptFrontendController = $GLOBALS['TSFE'];
@@ -144,31 +170,17 @@ final class Rootline
     private function getSizesAndMultiplierFromRootline(): array
     {
         $multiplier = [];
-        $sizes = [];
 
         foreach ($this->rootline as $contentElement) {
-            if ($contentElement instanceof ContentElementInterface) {
-                if ($contentElement instanceof Container) {
-                    $sizes = $contentElement->getActiveColumn()->getSizes();
-                    if (!empty($sizes)) {
-                        break;
-                    }
+            $sizes = [];
+            [$sizes, $multiplier] = $this->getSizesAndMultiplierFromContentElement($contentElement, $sizes, $multiplier);
 
-                    $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
-                }
-
-                $sizes = $contentElement->getSizes();
-                if (!empty($sizes)) {
-                    break;
-                }
-
-                $multiplier[] = $contentElement->getMultiplier();
+            if (!empty($sizes)) {
+                return [$sizes, $multiplier];
             }
         }
 
-        if (empty($sizes)) {
-            $sizes = $this->backendLayout->getSizes();
-        }
+        $sizes = $this->backendLayout->getSizes();
 
         return [$sizes, $multiplier];
     }

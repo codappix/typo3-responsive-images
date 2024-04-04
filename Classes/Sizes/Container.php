@@ -92,7 +92,6 @@ final class Container extends AbstractContentElement
             $this->contentType,
         ]);
 
-
         [$multiplier, $sizes] = $this->readConfigurationByPath($configurationPath);
 
         $this->multiplier = $multiplier;
