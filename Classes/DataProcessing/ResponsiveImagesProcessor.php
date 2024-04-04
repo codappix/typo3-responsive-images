@@ -23,28 +23,23 @@ namespace Codappix\ResponsiveImages\DataProcessing;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Domain\Factory\BreakpointFactory;
-use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
+use Codappix\ResponsiveImages\Service\ResponsiveImageService;
 use RuntimeException;
-use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlockData;
+use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 final class ResponsiveImagesProcessor implements DataProcessorInterface
 {
-    /**
-     * @var FileInterface[]
-     */
-    private array $files = [];
+    private array $processedData;
 
-    private array $calculatedFiles = [];
-
-    private array $contentElementSizes = [];
+    private ContentBlockData|array $data;
 
     public function __construct(
-        private readonly BreakpointFactory $breakpointFactory,
-        private readonly RootlineFactory $rootlineFactory
+        private readonly ResponsiveImageService $responsiveImageService,
+        private readonly FileRepository $fileRepository
     ) {
     }
 
@@ -58,6 +53,9 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
+        $this->processedData = $processedData;
+        $this->data = $processedData['data'];
+
         $filesDataKey = (string) $cObj->stdWrapValue(
             'filesDataKey',
             $processorConfiguration,
@@ -68,10 +66,17 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             $processorConfiguration,
             'image'
         );
-        if (isset($processedData[$filesDataKey]) && is_array($processedData[$filesDataKey])) {
-            $this->files = $processedData[$filesDataKey];
-        } else {
-            // Files key is empty or not configured.
+        $targetFieldName = (string) $cObj->stdWrapValue(
+            'as',
+            $processorConfiguration,
+            'responsiveImages'
+        );
+
+        $files = $this->getFiles($filesDataKey, $fieldName);
+
+        if (empty($files)) {
+            $processedData[$targetFieldName] = [];
+
             return $processedData;
         }
 
@@ -80,50 +85,49 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             throw new RuntimeException('Could not fetch TypoScriptFrontendController from request.', 1712819889);
         }
 
-        $rootline = $this->rootlineFactory->create($processedData['data'], $fieldName, $tsfe);
-        $this->contentElementSizes = $rootline->getFinalSize();
-        $this->calculateFileDimensions();
+        if (
+            $this->data instanceof ContentBlockData
+        ) {
+            assert(is_array($this->data->_raw));
+            $data = $this->data->_raw;
+        } else {
+            $data = $this->data;
+        }
 
-        $targetFieldName = (string) $cObj->stdWrapValue(
-            'as',
-            $processorConfiguration,
-            'responsiveImages'
-        );
-
-        $processedData[$targetFieldName] = $this->calculatedFiles;
+        $processedData[$targetFieldName] = $this->responsiveImageService->getCalculatedFiles($files, $data, $fieldName, $tsfe);
 
         return $processedData;
     }
 
-    private function calculateFileDimensions(): void
+    private function getFiles(string $filesDataKey, string $fieldName): array
     {
-        foreach ($this->files as $file) {
-            $calculatedFile = [
-                'media' => $file,
-                'sizes' => $this->calculateFileDimensionForBreakpoints(),
-            ];
-
-            $this->calculatedFiles[] = $calculatedFile;
+        if (
+            isset($this->processedData[$filesDataKey])
+            && is_array($this->processedData[$filesDataKey])
+        ) {
+            return $this->processedData[$filesDataKey];
         }
+
+        if ($fieldName === '') {
+            return [];
+        }
+
+        $uid = $this->getFromData('uid');
+        assert(is_int($uid));
+
+        return $this->fileRepository->findByRelation(
+            'tt_content',
+            $fieldName,
+            $uid
+        );
     }
 
-    private function calculateFileDimensionForBreakpoints(): array
+    private function getFromData(string $key): mixed
     {
-        $fileDimensions = [];
-
-        $breakpoints = $this->breakpointFactory->getByConfigurationPath(['breakpoints']);
-
-        foreach ($breakpoints as $breakpoint) {
-            if (isset($this->contentElementSizes[$breakpoint->getIdentifier()]) === false) {
-                continue;
-            }
-
-            $fileDimensions[$breakpoint->getIdentifier()] = [
-                'breakpoint' => $breakpoint,
-                'size' => $this->contentElementSizes[$breakpoint->getIdentifier()],
-            ];
+        if ($this->data instanceof ContentBlockData) {
+            return $this->data->{$key};
         }
 
-        return $fileDimensions;
+        return $this->data[$key];
     }
 }
