@@ -23,8 +23,6 @@ namespace Codappix\ResponsiveImages\Sizes\BackendLayout;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Sizes\Multiplier;
-
 class Column
 {
     /**
@@ -42,7 +40,7 @@ class Column
         array $data
     ) {
         if (isset($data['multiplier'])) {
-            $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $data['multiplier']);
+            $this->multiplier = array_map(static fn ($multiplier): float => (float) $multiplier, $data['multiplier']);
         }
 
         if (isset($data['sizes'])) {

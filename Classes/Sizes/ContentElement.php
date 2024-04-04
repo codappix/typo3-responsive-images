@@ -66,7 +66,7 @@ class ContentElement extends AbstractContentElement
 
         if (is_array($configuration)) {
             if (isset($configuration['multiplier'])) {
-                $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
+                $this->multiplier = array_map(static fn ($multiplier): float => (float) $multiplier, $configuration['multiplier']);
             }
 
             if (isset($configuration['sizes'])) {
