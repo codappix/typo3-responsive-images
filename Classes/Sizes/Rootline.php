@@ -173,6 +173,8 @@ final class Rootline
 
                 $size *= $multiplierItem[$sizeName];
             }
+
+            $size = ceil($size);
         }
 
         $this->finalSizes = $sizes;
