@@ -60,27 +60,24 @@ final class Rootline
     }
 
     public function getSizesAndMultiplierFromContentElement(
-        mixed $contentElement,
-        array $sizes,
+        ContentElementInterface $contentElement,
         array $multiplier
     ): array {
-        if ($contentElement instanceof ContentElementInterface) {
-            if ($contentElement instanceof Container) {
-                $sizes = $contentElement->getActiveColumn()->getScalingConfiguration()->getSizes();
-                if (!empty($sizes)) {
-                    return [$sizes, $multiplier];
-                }
-
-                $multiplier[] = $contentElement->getActiveColumn()->getScalingConfiguration()->getMultiplier();
-            }
-
-            $sizes = $contentElement->getScalingConfiguration()->getSizes();
+        if ($contentElement instanceof Container) {
+            $sizes = $contentElement->getActiveColumn()->getScalingConfiguration()->getSizes();
             if (!empty($sizes)) {
                 return [$sizes, $multiplier];
             }
 
-            $multiplier[] = $contentElement->getScalingConfiguration()->getMultiplier();
+            $multiplier[] = $contentElement->getActiveColumn()->getScalingConfiguration()->getMultiplier();
         }
+
+        $sizes = $contentElement->getScalingConfiguration()->getSizes();
+        if (!empty($sizes)) {
+            return [$sizes, $multiplier];
+        }
+
+        $multiplier[] = $contentElement->getScalingConfiguration()->getMultiplier();
 
         return [$sizes, $multiplier];
     }
@@ -172,8 +169,7 @@ final class Rootline
         $multiplier = [];
 
         foreach ($this->rootline as $contentElement) {
-            $sizes = [];
-            [$sizes, $multiplier] = $this->getSizesAndMultiplierFromContentElement($contentElement, $sizes, $multiplier);
+            [$sizes, $multiplier] = $this->getSizesAndMultiplierFromContentElement($contentElement, $multiplier);
 
             if (!empty($sizes)) {
                 return [$sizes, $multiplier];
