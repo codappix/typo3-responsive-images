@@ -66,20 +66,20 @@ final class Rootline
     ): array {
         if ($contentElement instanceof ContentElementInterface) {
             if ($contentElement instanceof Container) {
-                $sizes = $contentElement->getActiveColumn()->getSizes();
+                $sizes = $contentElement->getActiveColumn()->getScalingConfiguration()->getSizes();
                 if (!empty($sizes)) {
                     return [$sizes, $multiplier];
                 }
 
-                $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
+                $multiplier[] = $contentElement->getActiveColumn()->getScalingConfiguration()->getMultiplier();
             }
 
-            $sizes = $contentElement->getSizes();
+            $sizes = $contentElement->getScalingConfiguration()->getSizes();
             if (!empty($sizes)) {
                 return [$sizes, $multiplier];
             }
 
-            $multiplier[] = $contentElement->getMultiplier();
+            $multiplier[] = $contentElement->getScalingConfiguration()->getMultiplier();
         }
 
         return [$sizes, $multiplier];

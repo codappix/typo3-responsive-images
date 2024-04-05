@@ -27,16 +27,6 @@ use Codappix\ResponsiveImages\Sizes\BackendLayout\Column;
 
 final class Container extends AbstractContentElement
 {
-    /**
-     * @var float[]
-     */
-    private array $multiplier = [];
-
-    /**
-     * @var int[]
-     */
-    private array $sizes = [];
-
     private array $columns = [];
 
     private Column $activeColumn;
@@ -69,22 +59,6 @@ final class Container extends AbstractContentElement
         return $this->activeColumn;
     }
 
-    /**
-     * @return float[]
-     */
-    public function getMultiplier(): array
-    {
-        return $this->multiplier;
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getSizes(): array
-    {
-        return $this->sizes;
-    }
-
     public function readConfiguration(): void
     {
         $configurationPath = implode('.', [
@@ -92,10 +66,7 @@ final class Container extends AbstractContentElement
             $this->contentType,
         ]);
 
-        [$multiplier, $sizes] = $this->readConfigurationByPath($configurationPath);
-
-        $this->multiplier = $multiplier;
-        $this->sizes = $sizes;
+        $this->scalingConfiguration = $this->readConfigurationByPath($configurationPath);
     }
 
     private function determineColumns(): void

@@ -31,6 +31,8 @@ abstract class AbstractContentElement implements ContentElementInterface
 {
     protected ConfigurationManager $configurationManager;
 
+    protected ScalingConfiguration $scalingConfiguration;
+
     protected int $colPos;
 
     protected string $contentType;
@@ -85,23 +87,18 @@ abstract class AbstractContentElement implements ContentElementInterface
         $this->parent = $contentElement;
     }
 
-    protected function readConfigurationByPath(string $configurationPath): array
+    public function getScalingConfiguration(): ScalingConfiguration
+    {
+        return $this->scalingConfiguration;
+    }
+
+    protected function readConfigurationByPath(string $configurationPath): ScalingConfiguration
     {
         $configuration = $this->configurationManager->getByPath($configurationPath);
-
-        $multiplier = [];
-        $sizes = [];
-
-        if (is_array($configuration)) {
-            if (isset($configuration['multiplier'])) {
-                $multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
-            }
-
-            if (isset($configuration['sizes'])) {
-                $sizes = array_map(static fn ($size): int => (int) $size, $configuration['sizes']);
-            }
+        if (!is_array($configuration)) {
+            $configuration = [];
         }
 
-        return [$multiplier, $sizes];
+        return new ScalingConfiguration($configuration);
     }
 }

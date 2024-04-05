@@ -7,9 +7,9 @@ plugin.tx_responsiveimages {
                         multiplier {
                             xs = 1
                             sm = 1
-                            md = 0,5
-                            lg = 0,5
-                            xl = 0,5
+                            md = 0.5
+                            lg = 0.5
+                            xl = 0.5
                         }
                     }
 
@@ -17,9 +17,9 @@ plugin.tx_responsiveimages {
                         multiplier {
                             xs = 1
                             sm = 1
-                            md = 0,5
-                            lg = 0,5
-                            xl = 0,5
+                            md = 0.5
+                            lg = 0.5
+                            xl = 0.5
                         }
                     }
                 }

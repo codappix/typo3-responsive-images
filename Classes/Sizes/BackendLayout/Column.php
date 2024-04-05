@@ -23,31 +23,17 @@ namespace Codappix\ResponsiveImages\Sizes\BackendLayout;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Sizes\Multiplier;
+use Codappix\ResponsiveImages\Sizes\ScalingConfiguration;
 
 class Column
 {
-    /**
-     * @var float[]
-     */
-    private array $multiplier = [];
-
-    /**
-     * @var int[]
-     */
-    private array $sizes = [];
+    protected ScalingConfiguration $scalingConfiguration;
 
     public function __construct(
         private readonly int $identifier,
         array $data
     ) {
-        if (isset($data['multiplier'])) {
-            $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $data['multiplier']);
-        }
-
-        if (isset($data['sizes'])) {
-            $this->sizes = array_map(static fn ($size): int => (int) $size, $data['sizes']);
-        }
+        $this->scalingConfiguration = new ScalingConfiguration($data);
     }
 
     public function getIdentifier(): int
@@ -55,19 +41,8 @@ class Column
         return $this->identifier;
     }
 
-    /**
-     * @return float[]
-     */
-    public function getMultiplier(): array
+    public function getScalingConfiguration(): ScalingConfiguration
     {
-        return $this->multiplier;
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getSizes(): array
-    {
-        return $this->sizes;
+        return $this->scalingConfiguration;
     }
 }

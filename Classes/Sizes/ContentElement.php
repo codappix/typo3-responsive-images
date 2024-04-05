@@ -25,52 +25,18 @@ namespace Codappix\ResponsiveImages\Sizes;
 
 class ContentElement extends AbstractContentElement
 {
-    /**
-     * @var float[]
-     */
-    private array $multiplier = [];
-
-    /**
-     * @var int[]
-     */
-    private array $sizes = [];
-
     public function __construct(
         array $data,
         private readonly string $fieldName
     ) {
         parent::__construct($data);
 
-        $this->readConfiguration();
-    }
-
-    /**
-     * @return float[]
-     */
-    public function getMultiplier(): array
-    {
-        return $this->multiplier;
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getSizes(): array
-    {
-        return $this->sizes;
-    }
-
-    public function readConfiguration(): void
-    {
         $configurationPath = implode('.', [
             'contentelements',
             $this->contentType,
             $this->fieldName,
         ]);
 
-        [$multiplier, $sizes] = $this->readConfigurationByPath($configurationPath);
-
-        $this->multiplier = $multiplier;
-        $this->sizes = $sizes;
+        $this->scalingConfiguration = $this->readConfigurationByPath($configurationPath);
     }
 }

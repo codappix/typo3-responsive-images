@@ -20,7 +20,5 @@ interface ContentElementInterface
 
     public function getParent(): ?self;
 
-    public function getSizes(): array;
-
-    public function getMultiplier(): array;
+    public function getScalingConfiguration(): ScalingConfiguration;
 }
