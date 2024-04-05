@@ -35,7 +35,13 @@ final class Container extends AbstractContentElement
     {
         parent::__construct($data);
 
-        $this->readConfiguration();
+        $this->scalingConfiguration = $this->readConfigurationByPath(
+            implode('.', [
+                'container',
+                $this->contentType,
+            ])
+        );
+
         $this->determineColumns();
     }
 
@@ -57,16 +63,6 @@ final class Container extends AbstractContentElement
     public function getActiveColumn(): Column
     {
         return $this->activeColumn;
-    }
-
-    public function readConfiguration(): void
-    {
-        $configurationPath = implode('.', [
-            'container',
-            $this->contentType,
-        ]);
-
-        $this->scalingConfiguration = $this->readConfigurationByPath($configurationPath);
     }
 
     private function determineColumns(): void

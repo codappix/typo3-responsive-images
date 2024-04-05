@@ -31,12 +31,12 @@ class ContentElement extends AbstractContentElement
     ) {
         parent::__construct($data);
 
-        $configurationPath = implode('.', [
-            'contentelements',
-            $this->contentType,
-            $this->fieldName,
-        ]);
-
-        $this->scalingConfiguration = $this->readConfigurationByPath($configurationPath);
+        $this->scalingConfiguration = $this->readConfigurationByPath(
+            implode('.', [
+                'contentelements',
+                $this->contentType,
+                $this->fieldName,
+            ])
+        );
     }
 }
