@@ -23,32 +23,41 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
-use Codappix\ResponsiveImages\Sizes\BackendLayout\Column;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
-final class BackendLayout
+final class BackendLayout extends AbstractRootlineElement implements RootlineElementInterface
 {
-    private array $sizes = [];
-
-    private array $columns = [];
-
-    private Column $activeColumn;
-
-    private readonly ConfigurationManager $configurationManager;
+    /**
+     * @var int[]
+     */
+    private array $columns;
 
     public function __construct(
         protected string $identifier
     ) {
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+        parent::__construct();
 
-        $this->determineSizes();
+        $this->scalingConfiguration = $this->readConfigurationByPath(
+            implode('.', [
+                'backendlayouts',
+                $this->identifier,
+            ])
+        );
+
         $this->determineColumns();
     }
 
-    public function getSizes(): array
+    public function getParent(): ?RootlineElementInterface
     {
-        return $this->sizes;
+        return null;
+    }
+
+    public function setParent(RootlineElementInterface $rootlineElement): void
+    {
+
+    }
+
+    public function getFinalSize(array $multiplier): array
+    {
+        return $this->multiplyArray($this->scalingConfiguration->getSizes(), $multiplier);
     }
 
     public function getColumns(): array
@@ -56,35 +65,7 @@ final class BackendLayout
         return $this->columns;
     }
 
-    public function getColumn(int $columnPosition): Column
-    {
-        return $this->columns[$columnPosition];
-    }
-
-    public function setActiveColumn(Column $column): void
-    {
-        $this->activeColumn = $column;
-    }
-
-    public function getActiveColumn(): Column
-    {
-        return $this->activeColumn;
-    }
-
-    private function determineSizes(): void
-    {
-        $sizesPath = implode('.', [
-            'backendlayouts',
-            $this->identifier,
-            'sizes',
-        ]);
-
-        if (is_array($this->configurationManager->getByPath($sizesPath))) {
-            $this->sizes = $this->configurationManager->getByPath($sizesPath);
-        }
-    }
-
-    private function determineColumns(): array
+    private function determineColumns(): void
     {
         $sizesPath = implode('.', [
             'backendlayouts',
@@ -92,14 +73,8 @@ final class BackendLayout
             'columns',
         ]);
 
-        $breakpointsByPath = $this->configurationManager->getByPath($sizesPath);
-
-        if (is_iterable($breakpointsByPath)) {
-            foreach ($breakpointsByPath as $columnIdentifier => $columnData) {
-                $this->columns[$columnIdentifier] = new Column($columnIdentifier, $columnData);
-            }
-        }
-
-        return $this->columns;
+        $columns = $this->configurationManager->getByPath($sizesPath);
+        assert(is_array($columns));
+        $this->columns = array_map(static fn ($column): int => (int) $column, array_keys($columns));
     }
 }

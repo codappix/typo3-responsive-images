@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes\BackendLayout;
+namespace Codappix\ResponsiveImages\Sizes;
 
 /*
  * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
@@ -23,26 +23,26 @@ namespace Codappix\ResponsiveImages\Sizes\BackendLayout;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Sizes\ScalingConfiguration;
-
-class Column
+final class BackendLayoutColumn extends AbstractRootlineElement implements RootlineElementInterface
 {
-    protected ScalingConfiguration $scalingConfiguration;
-
     public function __construct(
-        private readonly int $identifier,
-        array $data
+        protected string $identifier,
+        protected int $column
     ) {
-        $this->scalingConfiguration = new ScalingConfiguration($data);
+        parent::__construct();
+
+        $this->scalingConfiguration = $this->readConfigurationByPath(
+            implode('.', [
+                'backendlayouts',
+                $this->identifier,
+                'columns',
+                (string) $this->column,
+            ])
+        );
     }
 
-    public function getIdentifier(): int
+    public function getColumn(): int
     {
-        return $this->identifier;
-    }
-
-    public function getScalingConfiguration(): ScalingConfiguration
-    {
-        return $this->scalingConfiguration;
+        return $this->column;
     }
 }

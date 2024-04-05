@@ -23,11 +23,21 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-interface ContentElementInterface extends RootlineElementInterface
+class ContainerColumn extends AbstractContentElement
 {
-    public function getData(?string $dataIdentifier = null): mixed;
+    public function __construct(
+        array $data,
+        int $colPos
+    ) {
+        parent::__construct($data);
 
-    public function getContentType(): string;
-
-    public function getColPos(): int;
+        $this->scalingConfiguration = $this->readConfigurationByPath(
+            implode('.', [
+                'container',
+                $this->contentType,
+                'columns',
+                (string) $colPos,
+            ])
+        );
+    }
 }

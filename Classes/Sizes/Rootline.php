@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Codappix\ResponsiveImages\Sizes;
 
 /*
- * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,10 +25,7 @@ namespace Codappix\ResponsiveImages\Sizes;
  */
 
 use B13\Container\Tca\Registry;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Error\Exception;
+use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
@@ -38,40 +36,44 @@ final class Rootline
 
     private BackendLayout $backendLayout;
 
-    private array $rootline = [];
+    private ContainerRepository $containerRepository;
 
     private array $finalSizes = [];
 
     private string $fieldName;
 
-    public function __construct(array $data, string $fieldName)
-    {
+    private string $backendLayoutIdentifier;
+
+    public function __construct(
+        array $data,
+        string $fieldName
+    ) {
+        $this->containerRepository = new ContainerRepository();
+
         $this->determineBackendLayout();
         $this->fieldName = $fieldName;
-        $this->contentElement = $this->determineContentElement($data);
+        $this->contentElement = $this->determineContentElement(null, $data);
 
-        $this->determineRootline();
-        $this->calculateSizes();
+        $this->determineRootline($this->contentElement);
+
+        $this->finalSizes = $this->contentElement->getFinalSize([]);
     }
 
     public function getFinalSizes(): array
     {
-        return $this->finalSizes;
+        $sizes = $this->finalSizes;
+
+        foreach ($sizes as $sizeName => &$size) {
+            $size = ceil($size);
+        }
+
+        return $sizes;
     }
 
     public function getSizesAndMultiplierFromContentElement(
         ContentElementInterface $contentElement,
         array $multiplier
     ): array {
-        if ($contentElement instanceof Container) {
-            $sizes = $contentElement->getActiveColumn()->getScalingConfiguration()->getSizes();
-            if (!empty($sizes)) {
-                return [$sizes, $multiplier];
-            }
-
-            $multiplier[] = $contentElement->getActiveColumn()->getScalingConfiguration()->getMultiplier();
-        }
-
         $sizes = $contentElement->getScalingConfiguration()->getSizes();
         if (!empty($sizes)) {
             return [$sizes, $multiplier];
@@ -86,38 +88,45 @@ final class Rootline
     {
         $typoscriptFrontendController = $GLOBALS['TSFE'];
 
-        $backendLayoutIdentifier = GeneralUtility::makeInstance(PageLayoutResolver::class)
+        $this->backendLayoutIdentifier = GeneralUtility::makeInstance(PageLayoutResolver::class)
             ->getLayoutForPage($typoscriptFrontendController->page, $typoscriptFrontendController->rootLine)
         ;
 
-        $this->backendLayout = new BackendLayout($backendLayoutIdentifier);
+        $this->backendLayout = new BackendLayout($this->backendLayoutIdentifier);
     }
 
-    private function determineContentElement(array $data): ContentElementInterface
-    {
+    private function determineContentElement(
+        ?ContentElementInterface $contentElement,
+        array $data
+    ): ContentElementInterface {
         if (
             class_exists(Registry::class)
             && GeneralUtility::makeInstance(Registry::class)->isContainerElement($data['CType'])
+            && !is_null($contentElement)
         ) {
-            return new Container($data);
+            $newContainerColumn = new ContainerColumn($data, $contentElement->getColPos());
+            $contentElement->setParent($newContainerColumn);
+
+            $newContainer = new Container($data);
+            $newContainerColumn->setParent($newContainer);
+
+            return $newContainer;
         }
 
-        return new ContentElement($data, $this->fieldName);
+        $newContentElement = new ContentElement($data, $this->fieldName);
+        if (!is_null($contentElement)) {
+            $contentElement->setParent($newContentElement);
+        }
+
+        return $newContentElement;
     }
 
-    private function determineRootline(): void
+    private function determineRootline(ContentElementInterface $contentElement): void
     {
-        $this->rootline[] = $this->contentElement;
-
-        $this->parseRootline($this->contentElement);
-    }
-
-    private function parseRootline(ContentElementInterface $contentElement): void
-    {
-        if (array_key_exists($contentElement->getColPos(), $this->backendLayout->getColumns())) {
-            $this->backendLayout->setActiveColumn(
-                $this->backendLayout->getColumn($contentElement->getColPos())
-            );
+        if (in_array($contentElement->getColPos(), $this->backendLayout->getColumns(), true)) {
+            $newBackendLayoutColumn = new BackendLayoutColumn($this->backendLayoutIdentifier, $contentElement->getColPos());
+            $newBackendLayoutColumn->setParent($this->backendLayout);
+            $contentElement->setParent($newBackendLayoutColumn);
 
             return;
         }
@@ -125,76 +134,13 @@ final class Rootline
         if (ExtensionManagementUtility::isLoaded('b13/container')) {
             $parentContainer = $contentElement->getData('tx_container_parent');
             assert(is_int($parentContainer));
-            $parent = $this->fetchContentElementFromDatabase($parentContainer);
 
-            $this->rootline[] = $parent;
-            $this->parseRootline($parent);
+            $parent = $this->determineContentElement(
+                $contentElement,
+                $this->containerRepository->findByIdentifier($parentContainer)
+            );
 
-            $contentElement->setParent($parent);
+            $this->determineRootline($parent);
         }
-    }
-
-    /**
-     * @throws \Doctrine\DBAL\Exception
-     * @throws Exception
-     */
-    private function fetchContentElementFromDatabase(int $identifier): ContentElementInterface
-    {
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
-        $rawData = $queryBuilder
-            ->select('*')
-            ->from('tt_content')
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($identifier, Connection::PARAM_INT)))
-            ->executeQuery()
-            ->fetchAssociative()
-        ;
-
-        if ($rawData === false) {
-            throw new Exception("Content element '" . $identifier . "' not found.");
-        }
-
-        return $this->determineContentElement($rawData);
-    }
-
-    private function calculateSizes(): void
-    {
-        [$sizes, $multiplier] = $this->getSizesAndMultiplierFromRootline();
-
-        $this->calculateFinalSizes($sizes, $multiplier);
-    }
-
-    private function getSizesAndMultiplierFromRootline(): array
-    {
-        $multiplier = [];
-
-        foreach ($this->rootline as $contentElement) {
-            [$sizes, $multiplier] = $this->getSizesAndMultiplierFromContentElement($contentElement, $multiplier);
-
-            if (!empty($sizes)) {
-                return [$sizes, $multiplier];
-            }
-        }
-
-        $sizes = $this->backendLayout->getSizes();
-
-        return [$sizes, $multiplier];
-    }
-
-    private function calculateFinalSizes(array $sizes, array $multiplier): void
-    {
-        foreach ($sizes as $sizeName => &$size) {
-            foreach ($multiplier as $multiplierItem) {
-                if (isset($multiplierItem[$sizeName]) === false) {
-                    continue;
-                }
-
-                $size *= $multiplierItem[$sizeName];
-            }
-
-            $size = ceil($size);
-        }
-
-        $this->finalSizes = $sizes;
     }
 }

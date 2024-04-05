@@ -23,14 +23,8 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Sizes\BackendLayout\Column;
-
 final class Container extends AbstractContentElement
 {
-    private array $columns = [];
-
-    private Column $activeColumn;
-
     public function __construct(array $data)
     {
         parent::__construct($data);
@@ -41,44 +35,5 @@ final class Container extends AbstractContentElement
                 $this->contentType,
             ])
         );
-
-        $this->determineColumns();
-    }
-
-    public function getColumns(): array
-    {
-        return $this->columns;
-    }
-
-    public function getColumn(int $columnPosition): Column
-    {
-        return $this->columns[$columnPosition];
-    }
-
-    public function setActiveColumn(Column $column): void
-    {
-        $this->activeColumn = $column;
-    }
-
-    public function getActiveColumn(): Column
-    {
-        return $this->activeColumn;
-    }
-
-    private function determineColumns(): void
-    {
-        $sizesPath = implode('.', [
-            'container',
-            $this->contentType,
-            'columns',
-        ]);
-
-        $columnsByPath = $this->configurationManager->getByPath($sizesPath);
-
-        if (is_iterable($columnsByPath)) {
-            foreach ($columnsByPath as $columnIdentifier => $columnData) {
-                $this->columns[$columnIdentifier] = new Column($columnIdentifier, $columnData);
-            }
-        }
     }
 }

@@ -23,11 +23,13 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-interface ContentElementInterface extends RootlineElementInterface
+interface RootlineElementInterface
 {
-    public function getData(?string $dataIdentifier = null): mixed;
+    public function getParent(): ?self;
 
-    public function getContentType(): string;
+    public function setParent(self $rootlineElement): void;
 
-    public function getColPos(): int;
+    public function getFinalSize(array $multiplier): array;
+
+    public function getScalingConfiguration(): ScalingConfiguration;
 }

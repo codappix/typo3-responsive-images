@@ -95,14 +95,24 @@ class ContainerTest extends FunctionalTestCase
                 '4' => 'large 281 (min-width: 1480px)',
             ],
         ];
-        yield '2 Column 66-33' => [
-            '2col_66_33_Database.php',
+        yield '2 Column 66-33 Image in left Column' => [
+            '2col_66_33_ImageLeft_Database.php',
             [
                 '0' => 'mobile 734 (max-width: 480px)',
                 '1' => 'mobile 704 (max-width: 767px)',
                 '2' => 'tablet 616 (max-width: 991px)',
                 '3' => 'default 749 (max-width: 1479px)',
                 '4' => 'large 375 (min-width: 1480px)',
+            ],
+        ];
+        yield '2 Column 66-33 Image in right Column' => [
+            '2col_66_33_ImageRight_Database.php',
+            [
+                '0' => 'mobile 734 (max-width: 480px)',
+                '1' => 'mobile 704 (max-width: 767px)',
+                '2' => 'tablet 308 (max-width: 991px)',
+                '3' => 'default 375 (max-width: 1479px)',
+                '4' => 'large 188 (min-width: 1480px)',
             ],
         ];
         yield '2 Column in 1 Column' => [

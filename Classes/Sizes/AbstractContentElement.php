@@ -23,27 +23,20 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
 use Exception;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-abstract class AbstractContentElement implements ContentElementInterface
+abstract class AbstractContentElement extends AbstractRootlineElement implements ContentElementInterface
 {
-    protected ConfigurationManager $configurationManager;
-
-    protected ScalingConfiguration $scalingConfiguration;
-
     protected int $colPos;
 
     protected string $contentType;
 
-    protected array $data;
+    protected RootlineElementInterface $parent;
 
-    protected ContentElementInterface $parent;
-
-    public function __construct(array $data)
-    {
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    public function __construct(
+        protected array $data
+    ) {
+        parent::__construct();
 
         $this->contentType = $data['CType'];
         $this->colPos = $data['colPos'];
@@ -71,34 +64,5 @@ abstract class AbstractContentElement implements ContentElementInterface
     public function getContentType(): string
     {
         return $this->contentType;
-    }
-
-    public function getParent(): ?ContentElementInterface
-    {
-        return $this->parent;
-    }
-
-    public function setParent(ContentElementInterface $contentElement): void
-    {
-        if ($contentElement instanceof Container) {
-            $contentElement->setActiveColumn($contentElement->getColumn($this->colPos));
-        }
-
-        $this->parent = $contentElement;
-    }
-
-    public function getScalingConfiguration(): ScalingConfiguration
-    {
-        return $this->scalingConfiguration;
-    }
-
-    protected function readConfigurationByPath(string $configurationPath): ScalingConfiguration
-    {
-        $configuration = $this->configurationManager->getByPath($configurationPath);
-        if (!is_array($configuration)) {
-            $configuration = [];
-        }
-
-        return new ScalingConfiguration($configuration);
     }
 }
