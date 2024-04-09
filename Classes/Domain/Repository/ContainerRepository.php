@@ -22,7 +22,7 @@ class ContainerRepository
     {
         $queryBuilder = $this->connection->createQueryBuilder();
         $rawData = $queryBuilder
-            ->select('*')
+            ->select('uid', 'colPos', 'CType', 'tx_container_parent')
             ->from('tt_content')
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($identifier, Connection::PARAM_INT)))
             ->executeQuery()
