@@ -26,7 +26,7 @@ namespace Codappix\ResponsiveImages\Sizes;
 use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class AbstractRootlineElement
+abstract class AbstractRootlineElement
 {
     protected ConfigurationManager $configurationManager;
 
