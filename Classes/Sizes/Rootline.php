@@ -67,20 +67,6 @@ final class Rootline
         return $sizes;
     }
 
-    public function getSizesAndMultiplierFromContentElement(
-        ContentElementInterface $contentElement,
-        array $multiplier
-    ): array {
-        $sizes = $contentElement->getScalingConfiguration()->getSizes();
-        if (!empty($sizes)) {
-            return [$sizes, $multiplier];
-        }
-
-        $multiplier[] = $contentElement->getScalingConfiguration()->getMultiplier();
-
-        return [$sizes, $multiplier];
-    }
-
     private function determineBackendLayout(): void
     {
         $typoscriptFrontendController = $GLOBALS['TSFE'];
