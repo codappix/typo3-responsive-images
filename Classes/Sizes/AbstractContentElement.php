@@ -38,7 +38,6 @@ abstract class AbstractContentElement extends AbstractRootlineElement implements
 
         $this->contentType = $data['CType'];
         $this->colPos = $data['colPos'];
-        $this->data = $data;
     }
 
     public function getData(?string $dataIdentifier = null): mixed
