@@ -31,8 +31,6 @@ abstract class AbstractContentElement extends AbstractRootlineElement implements
 
     protected string $contentType;
 
-    protected RootlineElementInterface $parent;
-
     public function __construct(
         protected array $data
     ) {

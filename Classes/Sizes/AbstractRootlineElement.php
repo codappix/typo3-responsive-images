@@ -30,7 +30,7 @@ abstract class AbstractRootlineElement
 {
     protected ConfigurationManager $configurationManager;
 
-    protected RootlineElementInterface $parent;
+    protected ?RootlineElementInterface $parent = null;
 
     protected ScalingConfiguration $scalingConfiguration;
 
