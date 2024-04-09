@@ -24,9 +24,8 @@ namespace Codappix\ResponsiveImages\DataProcessing;
  */
 
 use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
-use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
+use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
 use Codappix\ResponsiveImages\Sizes\Breakpoint;
-use Codappix\ResponsiveImages\Sizes\Rootline;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
@@ -44,7 +43,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
 
     public function __construct(
         private ConfigurationManager $configurationManager,
-        private ContainerRepository $containerRepository
+        private RootlineFactory $rootlineFactory
     ) {
     }
 
@@ -75,7 +74,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = (new Rootline($this->containerRepository, $processedData['data'], $fieldName))->getFinalSizes();
+        $this->contentElementSizes = $this->rootlineFactory->getFinalSizes($processedData['data'], $fieldName);
         $this->calculateFileDimensions();
 
         $targetFieldName = (string) $cObj->stdWrapValue(

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Factory;
 
 /*
  * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
@@ -26,41 +26,44 @@ namespace Codappix\ResponsiveImages\Sizes;
 
 use B13\Container\Tca\Registry;
 use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
+use Codappix\ResponsiveImages\Sizes\BackendLayout;
+use Codappix\ResponsiveImages\Sizes\BackendLayoutColumn;
+use Codappix\ResponsiveImages\Sizes\Container;
+use Codappix\ResponsiveImages\Sizes\ContainerColumn;
+use Codappix\ResponsiveImages\Sizes\ContentElement;
+use Codappix\ResponsiveImages\Sizes\ContentElementInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
-final class Rootline
+final class RootlineFactory
 {
-    private readonly ContentElementInterface $contentElement;
-
     private BackendLayout $backendLayout;
-
-    private array $finalSizes = [];
 
     private string $fieldName;
 
     private string $backendLayoutIdentifier;
 
     public function __construct(
-        private ContainerRepository $containerRepository,
-        array $data,
-        string $fieldName
+        private readonly ContainerRepository $containerRepository,
+        private readonly PageLayoutResolver $pageLayoutResolver
     ) {
-        $this->determineBackendLayout();
-        $this->fieldName = $fieldName;
-        $this->contentElement = $this->determineContentElement(null, $data);
-
-        $this->determineRootline($this->contentElement);
-
-        $this->finalSizes = $this->contentElement->getFinalSize([]);
     }
 
-    public function getFinalSizes(): array
-    {
-        $sizes = $this->finalSizes;
+    public function getFinalSizes(
+        array $data,
+        string $fieldName
+    ): array {
+        $this->determineBackendLayout();
 
-        foreach ($sizes as $sizeName => &$size) {
+        $this->fieldName = $fieldName;
+        $contentElement = $this->determineContentElement(null, $data);
+
+        $this->determineRootline($contentElement);
+
+        $sizes = $contentElement->getFinalSize([]);
+
+        foreach ($sizes as &$size) {
             $size = ceil($size);
         }
 
@@ -71,9 +74,10 @@ final class Rootline
     {
         $typoscriptFrontendController = $GLOBALS['TSFE'];
 
-        $this->backendLayoutIdentifier = GeneralUtility::makeInstance(PageLayoutResolver::class)
-            ->getLayoutForPage($typoscriptFrontendController->page, $typoscriptFrontendController->rootLine)
-        ;
+        $this->backendLayoutIdentifier = $this->pageLayoutResolver->getLayoutForPage(
+            $typoscriptFrontendController->page,
+            $typoscriptFrontendController->rootLine
+        );
 
         $this->backendLayout = new BackendLayout($this->backendLayoutIdentifier);
     }

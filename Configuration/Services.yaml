@@ -28,9 +28,6 @@ services:
 
     Codappix\ResponsiveImages\DataProcessing\ResponsiveImagesProcessor:
         public: true
-        arguments:
-            $configurationManager: '@Codappix\ResponsiveImages\Configuration\ConfigurationManager'
-            $containerRepository: '@Codappix\ResponsiveImages\Domain\Repository\ContainerRepository'
 
     Codappix\ResponsiveImages\Configuration\ConfigurationManager:
         public: true
@@ -38,6 +35,5 @@ services:
             $settings: '@extbaseSettings.ResponsiveImages'
 
     Codappix\ResponsiveImages\Domain\Repository\ContainerRepository:
-        public: true
         arguments:
             - '@dbconnection.tt_content'
