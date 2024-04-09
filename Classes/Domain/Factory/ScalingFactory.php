@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Factory;
 
 /*
+ * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,43 +24,27 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Exception;
+use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
+use Codappix\ResponsiveImages\Domain\Model\Scaling;
 
-abstract class AbstractContentElement extends AbstractRootlineElement implements ContentElementInterface
+final class ScalingFactory
 {
-    protected int $colPos;
-
-    protected string $contentType;
-
     public function __construct(
-        protected array $data
+        private ConfigurationManager $configurationManager
     ) {
-        parent::__construct();
-
-        $this->contentType = $data['CType'];
-        $this->colPos = $data['colPos'];
     }
 
-    public function getData(?string $dataIdentifier = null): mixed
+    public function getByConfigurationPath(string $configurationPath): Scaling
     {
-        if ($dataIdentifier === null) {
-            return $this->data;
+        $configuration = $this->configurationManager->getByPath($configurationPath);
+        $multiplier = [];
+        $sizes = [];
+
+        if (is_array($configuration)) {
+            $multiplier = !empty($configuration['multiplier']) ? $configuration['multiplier'] : [];
+            $sizes = !empty($configuration['sizes']) ? $configuration['sizes'] : [];
         }
 
-        if (isset($this->data[$dataIdentifier]) === false) {
-            throw new Exception('No data found for key ' . $dataIdentifier . ' in $this->data.');
-        }
-
-        return $this->data[$dataIdentifier];
-    }
-
-    public function getColPos(): int
-    {
-        return $this->colPos;
-    }
-
-    public function getContentType(): string
-    {
-        return $this->contentType;
+        return new Scaling($multiplier, $sizes);
     }
 }

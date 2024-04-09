@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
- * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,26 +24,7 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-final class BackendLayoutColumn extends AbstractRootlineElement implements RootlineElementInterface
+interface BackendLayoutInterface extends RootlineElementInterface
 {
-    public function __construct(
-        protected string $identifier,
-        protected int $column
-    ) {
-        parent::__construct();
-
-        $this->scalingConfiguration = $this->readConfigurationByPath(
-            implode('.', [
-                'backendlayouts',
-                $this->identifier,
-                'columns',
-                (string) $this->column,
-            ])
-        );
-    }
-
-    public function getColumn(): int
-    {
-        return $this->column;
-    }
+    public function getColumns(): array;
 }

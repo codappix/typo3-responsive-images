@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
@@ -23,21 +23,42 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-class ContainerColumn extends AbstractContentElement
+class Scaling
 {
-    public function __construct(
-        array $data,
-        int $colPos
-    ) {
-        parent::__construct($data);
+    /**
+     * @var float[]
+     */
+    private array $multiplier = [];
 
-        $this->scalingConfiguration = $this->readConfigurationByPath(
-            implode('.', [
-                'container',
-                $this->contentType,
-                'columns',
-                (string) $colPos,
-            ])
-        );
+    /**
+     * @var int[]
+     */
+    private array $sizes = [];
+
+    public function __construct(array $multiplier, array $sizes)
+    {
+        if (!empty($multiplier)) {
+            $this->multiplier = array_map(static fn ($multiplier): float => (float) $multiplier, $multiplier);
+        }
+
+        if (!empty($sizes)) {
+            $this->sizes = array_map(static fn ($size): int => (int) $size, $sizes);
+        }
+    }
+
+    /**
+     * @return float[]
+     */
+    public function getMultiplier(): array
+    {
+        return $this->multiplier;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSizes(): array
+    {
+        return $this->sizes;
     }
 }

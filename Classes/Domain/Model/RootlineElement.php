@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Model;
+
+use Exception;
 
 /*
+ * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,20 +26,19 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
-abstract class AbstractRootlineElement
+class RootlineElement implements RootlineElementInterface
 {
-    protected ConfigurationManager $configurationManager;
+    protected int $colPos;
 
-    protected ?RootlineElementInterface $parent = null;
+    private ?RootlineElementInterface $parent = null;
 
-    protected ScalingConfiguration $scalingConfiguration;
-
-    public function __construct()
-    {
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    public function __construct(
+        private readonly Scaling $scaling,
+        private readonly array $data
+    ) {
+        if (isset($data['colPos'])) {
+            $this->colPos = $data['colPos'];
+        }
     }
 
     public function getParent(): ?RootlineElementInterface
@@ -49,28 +51,46 @@ abstract class AbstractRootlineElement
         $this->parent = $rootlineElement;
     }
 
-    public function getScalingConfiguration(): ScalingConfiguration
+    public function getScaling(): Scaling
     {
-        return $this->scalingConfiguration;
+        return $this->scaling;
     }
 
     public function getFinalSize(array $multiplier): array
     {
-        if ($this->getScalingConfiguration()->getSizes()) {
+        if ($this->getScaling()->getSizes()) {
             if (empty($multiplier)) {
-                return $this->getScalingConfiguration()->getSizes();
+                return $this->getScaling()->getSizes();
             }
 
-            return $this->multiplyArray($this->getScalingConfiguration()->getSizes(), $multiplier);
+            return $this->multiplyArray($this->getScaling()->getSizes(), $multiplier);
         }
 
         if (is_null($this->getParent())) {
-            return $this->multiplyArray($this->getScalingConfiguration()->getMultiplier(), $multiplier);
+            return $this->multiplyArray($this->getScaling()->getMultiplier(), $multiplier);
         }
 
         return $this->getParent()->getFinalSize(
-            $this->multiplyArray($this->getScalingConfiguration()->getMultiplier(), $multiplier)
+            $this->multiplyArray($this->getScaling()->getMultiplier(), $multiplier)
         );
+    }
+
+    public function getData(?string $dataIdentifier = null): mixed
+    {
+        if ($dataIdentifier === null) {
+            return $this->data;
+        }
+
+        if (isset($this->data[$dataIdentifier]) === false) {
+            throw new Exception('No data found for key ' . $dataIdentifier . ' in $this->data.');
+        }
+
+        return $this->data[$dataIdentifier];
+    }
+
+    public function getColPos(): int
+    {
+        return $this->colPos;
     }
 
     protected function multiplyArray(array $factor1, array $factor2): array
@@ -91,15 +111,5 @@ abstract class AbstractRootlineElement
         }
 
         return $factor1;
-    }
-
-    protected function readConfigurationByPath(string $configurationPath): ScalingConfiguration
-    {
-        $configuration = $this->configurationManager->getByPath($configurationPath);
-        if (!is_array($configuration)) {
-            $configuration = [];
-        }
-
-        return new ScalingConfiguration($configuration);
     }
 }

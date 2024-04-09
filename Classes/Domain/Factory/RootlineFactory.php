@@ -25,20 +25,16 @@ namespace Codappix\ResponsiveImages\Domain\Factory;
  */
 
 use B13\Container\Tca\Registry;
+use Codappix\ResponsiveImages\Domain\Model\BackendLayoutInterface;
+use Codappix\ResponsiveImages\Domain\Model\RootlineElementInterface;
 use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
-use Codappix\ResponsiveImages\Sizes\BackendLayout;
-use Codappix\ResponsiveImages\Sizes\BackendLayoutColumn;
-use Codappix\ResponsiveImages\Sizes\Container;
-use Codappix\ResponsiveImages\Sizes\ContainerColumn;
-use Codappix\ResponsiveImages\Sizes\ContentElement;
-use Codappix\ResponsiveImages\Sizes\ContentElementInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
 final class RootlineFactory
 {
-    private BackendLayout $backendLayout;
+    private BackendLayoutInterface $backendLayout;
 
     private string $fieldName;
 
@@ -46,7 +42,9 @@ final class RootlineFactory
 
     public function __construct(
         private readonly ContainerRepository $containerRepository,
-        private readonly PageLayoutResolver $pageLayoutResolver
+        private readonly PageLayoutResolver $pageLayoutResolver,
+        private readonly BackendLayoutFactory $backendLayoutFactory,
+        private readonly RootlineElementFactory $rootlineElementFactory
     ) {
     }
 
@@ -72,48 +70,22 @@ final class RootlineFactory
 
     private function determineBackendLayout(): void
     {
-        $typoscriptFrontendController = $GLOBALS['TSFE'];
+        $tsfe = $GLOBALS['TSFE'];
 
         $this->backendLayoutIdentifier = $this->pageLayoutResolver->getLayoutForPage(
-            $typoscriptFrontendController->page,
-            $typoscriptFrontendController->rootLine
+            $tsfe->page,
+            $tsfe->rootLine
         );
 
-        $this->backendLayout = new BackendLayout($this->backendLayoutIdentifier);
+        $this->backendLayout = $this->backendLayoutFactory->create(
+            $this->getConfigPathForBackendLayout()
+        );
     }
 
-    private function determineContentElement(
-        ?ContentElementInterface $contentElement,
-        array $data
-    ): ContentElementInterface {
-        if (
-            class_exists(Registry::class)
-            && GeneralUtility::makeInstance(Registry::class)->isContainerElement($data['CType'])
-            && !is_null($contentElement)
-        ) {
-            $newContainerColumn = new ContainerColumn($data, $contentElement->getColPos());
-            $contentElement->setParent($newContainerColumn);
-
-            $newContainer = new Container($data);
-            $newContainerColumn->setParent($newContainer);
-
-            return $newContainer;
-        }
-
-        $newContentElement = new ContentElement($data, $this->fieldName);
-        if (!is_null($contentElement)) {
-            $contentElement->setParent($newContentElement);
-        }
-
-        return $newContentElement;
-    }
-
-    private function determineRootline(ContentElementInterface $contentElement): void
+    private function determineRootline(RootlineElementInterface $contentElement): void
     {
         if (in_array($contentElement->getColPos(), $this->backendLayout->getColumns(), true)) {
-            $newBackendLayoutColumn = new BackendLayoutColumn($this->backendLayoutIdentifier, $contentElement->getColPos());
-            $newBackendLayoutColumn->setParent($this->backendLayout);
-            $contentElement->setParent($newBackendLayoutColumn);
+            $this->detarmineBackendLayout($contentElement);
 
             return;
         }
@@ -129,5 +101,102 @@ final class RootlineFactory
 
             $this->determineRootline($parent);
         }
+    }
+
+    private function determineContentElement(
+        ?RootlineElementInterface $contentElement,
+        array $data
+    ): RootlineElementInterface {
+        if (
+            class_exists(Registry::class)
+            && GeneralUtility::makeInstance(Registry::class)->isContainerElement($data['CType'])
+            && !is_null($contentElement)
+        ) {
+            return $this->determineContainer($data, $contentElement);
+        }
+
+        $newContentElement = $this->rootlineElementFactory->create(
+            $data,
+            $this->getConfigPathForContentElement($data['CType'])
+        );
+
+        if (!is_null($contentElement)) {
+            $contentElement->setParent($newContentElement);
+        }
+
+        return $newContentElement;
+    }
+
+    private function detarmineBackendLayout(RootlineElementInterface $contentElement): void
+    {
+        $newBackendLayoutColumn = $this->rootlineElementFactory->create(
+            [],
+            $this->getConfigPathForBackendLayoutColumn($contentElement)
+        );
+
+        $newBackendLayoutColumn->setParent($this->backendLayout);
+        $contentElement->setParent($newBackendLayoutColumn);
+    }
+
+    private function determineContainer(array $data, RootlineElementInterface $contentElement): RootlineElementInterface
+    {
+        $newContainerColumn = $this->rootlineElementFactory->create(
+            $data,
+            $this->getConfigPathForContainerColumn($data['CType'], $contentElement)
+        );
+        $contentElement->setParent($newContainerColumn);
+
+        $newContainer = $this->rootlineElementFactory->create(
+            $data,
+            $this->getConfigPathForContainer($data['CType'])
+        );
+        $newContainerColumn->setParent($newContainer);
+
+        return $newContainer;
+    }
+
+    private function getConfigPathForContentElement(string $CType): string
+    {
+        return implode('.', [
+            'contentelements',
+            $CType,
+            $this->fieldName,
+        ]);
+    }
+
+    private function getConfigPathForContainer(string $CType): string
+    {
+        return implode('.', [
+            'container',
+            $CType,
+        ]);
+    }
+
+    private function getConfigPathForContainerColumn(string $CType, RootlineElementInterface $contentElement): string
+    {
+        return implode('.', [
+            'container',
+            $CType,
+            'columns',
+            (string) $contentElement->getColPos(),
+        ]);
+    }
+
+    private function getConfigPathForBackendLayout(): string
+    {
+        return implode('.', [
+            'backendlayouts',
+            $this->backendLayoutIdentifier,
+        ]);
+    }
+
+    private function getConfigPathForBackendLayoutColumn(RootlineElementInterface $contentElement): string
+    {
+        return implode('.', [
+            'backendlayouts',
+            $this->backendLayoutIdentifier,
+            'columns',
+            $contentElement->getColPos(),
+        ]);
     }
 }

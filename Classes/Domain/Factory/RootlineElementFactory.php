@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Factory;
 
 /*
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
@@ -23,11 +23,20 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-interface ContentElementInterface extends RootlineElementInterface
+use Codappix\ResponsiveImages\Domain\Model\RootlineElement;
+use Codappix\ResponsiveImages\Domain\Model\RootlineElementInterface;
+
+class RootlineElementFactory
 {
-    public function getData(?string $dataIdentifier = null): mixed;
+    public function __construct(
+        private readonly ScalingFactory $scalingFactory
+    ) {
+    }
 
-    public function getContentType(): string;
+    public function create(array $data, string $configurationPath): RootlineElementInterface
+    {
+        $scaling = $this->scalingFactory->getByConfigurationPath($configurationPath);
 
-    public function getColPos(): int;
+        return new RootlineElement($scaling, $data);
+    }
 }
