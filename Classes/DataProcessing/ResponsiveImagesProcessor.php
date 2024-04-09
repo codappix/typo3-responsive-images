@@ -24,17 +24,15 @@ namespace Codappix\ResponsiveImages\DataProcessing;
  */
 
 use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
+use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
 use Codappix\ResponsiveImages\Sizes\Breakpoint;
 use Codappix\ResponsiveImages\Sizes\Rootline;
 use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
 final class ResponsiveImagesProcessor implements DataProcessorInterface
 {
-    private readonly ConfigurationManager $configurationManager;
-
     /**
      * @var FileInterface[]
      */
@@ -44,9 +42,10 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
 
     private array $contentElementSizes = [];
 
-    public function __construct()
-    {
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    public function __construct(
+        private ConfigurationManager $configurationManager,
+        private ContainerRepository $containerRepository
+    ) {
     }
 
     public function process(
@@ -76,7 +75,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = (new Rootline($processedData['data'], $fieldName))->getFinalSizes();
+        $this->contentElementSizes = (new Rootline($this->containerRepository, $processedData['data'], $fieldName))->getFinalSizes();
         $this->calculateFileDimensions();
 
         $targetFieldName = (string) $cObj->stdWrapValue(

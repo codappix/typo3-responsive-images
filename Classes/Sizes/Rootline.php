@@ -36,8 +36,6 @@ final class Rootline
 
     private BackendLayout $backendLayout;
 
-    private ContainerRepository $containerRepository;
-
     private array $finalSizes = [];
 
     private string $fieldName;
@@ -45,11 +43,10 @@ final class Rootline
     private string $backendLayoutIdentifier;
 
     public function __construct(
+        private ContainerRepository $containerRepository,
         array $data,
         string $fieldName
     ) {
-        $this->containerRepository = new ContainerRepository();
-
         $this->determineBackendLayout();
         $this->fieldName = $fieldName;
         $this->contentElement = $this->determineContentElement(null, $data);
