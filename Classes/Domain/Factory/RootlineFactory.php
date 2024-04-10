@@ -24,19 +24,15 @@ namespace Codappix\ResponsiveImages\Domain\Factory;
  * 02110-1301, USA.
  */
 
-use B13\Container\Tca\Registry;
 use Codappix\ResponsiveImages\Domain\Model\BackendLayoutInterface;
 use Codappix\ResponsiveImages\Domain\Model\RootlineElementInterface;
 use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
 final class RootlineFactory
 {
     private BackendLayoutInterface $backendLayout;
-
-    private string $fieldName;
 
     private string $backendLayoutIdentifier;
 
@@ -54,8 +50,7 @@ final class RootlineFactory
     ): array {
         $this->determineBackendLayout();
 
-        $this->fieldName = $fieldName;
-        $contentElement = $this->determineContentElement(null, $data);
+        $contentElement = $this->determineContentElement($data, $fieldName);
 
         $this->determineRootline($contentElement);
 
@@ -66,6 +61,19 @@ final class RootlineFactory
         }
 
         return $sizes;
+    }
+
+    public function determineContainerColumn(
+        array $data,
+        RootlineElementInterface $contentElement
+    ): RootlineElementInterface {
+        $newContainerColumn = $this->rootlineElementFactory->create(
+            $data,
+            $this->getConfigPathForContainerColumn($data['CType'], $contentElement)
+        );
+        $contentElement->setParent($newContainerColumn);
+
+        return $newContainerColumn;
     }
 
     private function determineBackendLayout(): void
@@ -82,52 +90,7 @@ final class RootlineFactory
         );
     }
 
-    private function determineRootline(RootlineElementInterface $contentElement): void
-    {
-        if (in_array($contentElement->getColPos(), $this->backendLayout->getColumns(), true)) {
-            $this->detarmineBackendLayout($contentElement);
-
-            return;
-        }
-
-        if (ExtensionManagementUtility::isLoaded('b13/container')) {
-            $parentContainer = $contentElement->getData('tx_container_parent');
-            assert(is_int($parentContainer));
-
-            $parent = $this->determineContentElement(
-                $contentElement,
-                $this->containerRepository->findByIdentifier($parentContainer)
-            );
-
-            $this->determineRootline($parent);
-        }
-    }
-
-    private function determineContentElement(
-        ?RootlineElementInterface $contentElement,
-        array $data
-    ): RootlineElementInterface {
-        if (
-            class_exists(Registry::class)
-            && GeneralUtility::makeInstance(Registry::class)->isContainerElement($data['CType'])
-            && !is_null($contentElement)
-        ) {
-            return $this->determineContainer($data, $contentElement);
-        }
-
-        $newContentElement = $this->rootlineElementFactory->create(
-            $data,
-            $this->getConfigPathForContentElement($data['CType'])
-        );
-
-        if (!is_null($contentElement)) {
-            $contentElement->setParent($newContentElement);
-        }
-
-        return $newContentElement;
-    }
-
-    private function detarmineBackendLayout(RootlineElementInterface $contentElement): void
+    private function determineBackendLayoutColumn(RootlineElementInterface $contentElement): void
     {
         $newBackendLayoutColumn = $this->rootlineElementFactory->create(
             [],
@@ -138,13 +101,23 @@ final class RootlineFactory
         $contentElement->setParent($newBackendLayoutColumn);
     }
 
+    private function determineContentElement(
+        array $data,
+        string $fieldName
+    ): RootlineElementInterface {
+        return $this->rootlineElementFactory->create(
+            $data,
+            implode('.', [
+                'contentelements',
+                $data['CType'],
+                $fieldName,
+            ])
+        );
+    }
+
     private function determineContainer(array $data, RootlineElementInterface $contentElement): RootlineElementInterface
     {
-        $newContainerColumn = $this->rootlineElementFactory->create(
-            $data,
-            $this->getConfigPathForContainerColumn($data['CType'], $contentElement)
-        );
-        $contentElement->setParent($newContainerColumn);
+        $newContainerColumn = $this->determineContainerColumn($data, $contentElement);
 
         $newContainer = $this->rootlineElementFactory->create(
             $data,
@@ -155,13 +128,25 @@ final class RootlineFactory
         return $newContainer;
     }
 
-    private function getConfigPathForContentElement(string $CType): string
+    private function determineRootline(RootlineElementInterface $contentElement): void
     {
-        return implode('.', [
-            'contentelements',
-            $CType,
-            $this->fieldName,
-        ]);
+        if (in_array($contentElement->getColPos(), $this->backendLayout->getColumns(), true)) {
+            $this->determineBackendLayoutColumn($contentElement);
+
+            return;
+        }
+
+        if (ExtensionManagementUtility::isLoaded('b13/container')) {
+            $parentContainer = $contentElement->getData('tx_container_parent');
+            assert(is_int($parentContainer));
+
+            $parent = $this->determineContainer(
+                $this->containerRepository->findByIdentifier($parentContainer),
+                $contentElement
+            );
+
+            $this->determineRootline($parent);
+        }
     }
 
     private function getConfigPathForContainer(string $CType): string
@@ -175,8 +160,7 @@ final class RootlineFactory
     private function getConfigPathForContainerColumn(string $CType, RootlineElementInterface $contentElement): string
     {
         return implode('.', [
-            'container',
-            $CType,
+            $this->getConfigPathForContainer($CType),
             'columns',
             (string) $contentElement->getColPos(),
         ]);
@@ -193,10 +177,9 @@ final class RootlineFactory
     private function getConfigPathForBackendLayoutColumn(RootlineElementInterface $contentElement): string
     {
         return implode('.', [
-            'backendlayouts',
-            $this->backendLayoutIdentifier,
+            $this->getConfigPathForBackendLayout(),
             'columns',
-            $contentElement->getColPos(),
+            (string) $contentElement->getColPos(),
         ]);
     }
 }
