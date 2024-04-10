@@ -25,26 +25,30 @@ namespace Codappix\ResponsiveImages\Domain\Factory;
  */
 
 use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
-use Codappix\ResponsiveImages\Domain\Model\Scaling;
+use Codappix\ResponsiveImages\Domain\Model\Breakpoint;
 
-final class ScalingFactory
+final class BreakpointFactory
 {
     public function __construct(
         private readonly ConfigurationManager $configurationManager
     ) {
     }
 
-    public function getByConfigurationPath(array|string $configurationPath): Scaling
+    /**
+     * @return Breakpoint[]
+     */
+    public function getByConfigurationPath(array|string $configurationPath): array
     {
-        $configuration = $this->configurationManager->getByPath($configurationPath);
-        $multiplier = [];
-        $sizes = [];
+        $breakpoints = [];
 
-        if (is_array($configuration)) {
-            $multiplier = !empty($configuration['multiplier']) ? $configuration['multiplier'] : [];
-            $sizes = !empty($configuration['sizes']) ? $configuration['sizes'] : [];
+        $breakpointsByPath = $this->configurationManager->getByPath($configurationPath);
+
+        if (is_iterable($breakpointsByPath)) {
+            foreach ($breakpointsByPath as $breakpointIdentifier => $breakpointData) {
+                $breakpoints[$breakpointIdentifier] = new Breakpoint($breakpointIdentifier, $breakpointData);
+            }
         }
 
-        return new Scaling($multiplier, $sizes);
+        return $breakpoints;
     }
 }

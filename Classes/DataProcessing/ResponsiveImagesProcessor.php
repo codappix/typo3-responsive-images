@@ -23,9 +23,8 @@ namespace Codappix\ResponsiveImages\DataProcessing;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
+use Codappix\ResponsiveImages\Domain\Factory\BreakpointFactory;
 use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
-use Codappix\ResponsiveImages\Domain\Model\Breakpoint;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
@@ -42,7 +41,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     private array $contentElementSizes = [];
 
     public function __construct(
-        private ConfigurationManager $configurationManager,
+        private BreakpointFactory $breakpointFactory,
         private RootlineFactory $rootlineFactory
     ) {
     }
@@ -105,9 +104,8 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     {
         $fileDimensions = [];
 
-        $breakpoints = $this->getBreakpoints();
+        $breakpoints = $this->breakpointFactory->getByConfigurationPath(['breakpoints']);
 
-        /** @var Breakpoint $breakpoint */
         foreach ($breakpoints as $breakpoint) {
             if (isset($this->contentElementSizes[$breakpoint->getIdentifier()]) === false) {
                 continue;
@@ -120,20 +118,5 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         }
 
         return $fileDimensions;
-    }
-
-    private function getBreakpoints(): array
-    {
-        $breakpoints = [];
-
-        $breakpointsByPath = $this->configurationManager->getByPath(['breakpoints']);
-
-        if (is_iterable($breakpointsByPath)) {
-            foreach ($breakpointsByPath as $breakpointIdentifier => $breakpointData) {
-                $breakpoints[$breakpointIdentifier] = new Breakpoint($breakpointIdentifier, $breakpointData);
-            }
-        }
-
-        return $breakpoints;
     }
 }
