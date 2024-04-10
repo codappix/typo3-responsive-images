@@ -25,7 +25,7 @@ namespace Codappix\ResponsiveImages\DataProcessing;
 
 use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
 use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
-use Codappix\ResponsiveImages\Sizes\Breakpoint;
+use Codappix\ResponsiveImages\Domain\Model\Breakpoint;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;

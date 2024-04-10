@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
  * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
