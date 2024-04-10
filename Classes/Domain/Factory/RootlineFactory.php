@@ -69,7 +69,12 @@ final class RootlineFactory
     ): RootlineElementInterface {
         $newContainerColumn = $this->rootlineElementFactory->create(
             $data,
-            $this->getConfigPathForContainerColumn($data['CType'], $contentElement)
+            [
+                'container',
+                $data['CType'],
+                'columns',
+                (string) $contentElement->getColPos(),
+            ]
         );
         $contentElement->setParent($newContainerColumn);
 
@@ -86,7 +91,10 @@ final class RootlineFactory
         );
 
         $this->backendLayout = $this->backendLayoutFactory->create(
-            $this->getConfigPathForBackendLayout()
+            [
+                'backendlayouts',
+                $this->backendLayoutIdentifier,
+            ]
         );
     }
 
@@ -94,25 +102,16 @@ final class RootlineFactory
     {
         $newBackendLayoutColumn = $this->rootlineElementFactory->create(
             [],
-            $this->getConfigPathForBackendLayoutColumn($contentElement)
+            [
+                'backendlayouts',
+                $this->backendLayoutIdentifier,
+                'columns',
+                (string) $contentElement->getColPos(),
+            ]
         );
 
         $newBackendLayoutColumn->setParent($this->backendLayout);
         $contentElement->setParent($newBackendLayoutColumn);
-    }
-
-    private function determineContentElement(
-        array $data,
-        string $fieldName
-    ): RootlineElementInterface {
-        return $this->rootlineElementFactory->create(
-            $data,
-            implode('.', [
-                'contentelements',
-                $data['CType'],
-                $fieldName,
-            ])
-        );
     }
 
     private function determineContainer(array $data, RootlineElementInterface $contentElement): RootlineElementInterface
@@ -121,11 +120,28 @@ final class RootlineFactory
 
         $newContainer = $this->rootlineElementFactory->create(
             $data,
-            $this->getConfigPathForContainer($data['CType'])
+            [
+                'container',
+                $data['CType'],
+            ]
         );
         $newContainerColumn->setParent($newContainer);
 
         return $newContainer;
+    }
+
+    private function determineContentElement(
+        array $data,
+        string $fieldName
+    ): RootlineElementInterface {
+        return $this->rootlineElementFactory->create(
+            $data,
+            [
+                'contentelements',
+                $data['CType'],
+                $fieldName,
+            ]
+        );
     }
 
     private function determineRootline(RootlineElementInterface $contentElement): void
@@ -147,39 +163,5 @@ final class RootlineFactory
 
             $this->determineRootline($parent);
         }
-    }
-
-    private function getConfigPathForContainer(string $CType): string
-    {
-        return implode('.', [
-            'container',
-            $CType,
-        ]);
-    }
-
-    private function getConfigPathForContainerColumn(string $CType, RootlineElementInterface $contentElement): string
-    {
-        return implode('.', [
-            $this->getConfigPathForContainer($CType),
-            'columns',
-            (string) $contentElement->getColPos(),
-        ]);
-    }
-
-    private function getConfigPathForBackendLayout(): string
-    {
-        return implode('.', [
-            'backendlayouts',
-            $this->backendLayoutIdentifier,
-        ]);
-    }
-
-    private function getConfigPathForBackendLayoutColumn(RootlineElementInterface $contentElement): string
-    {
-        return implode('.', [
-            $this->getConfigPathForBackendLayout(),
-            'columns',
-            (string) $contentElement->getColPos(),
-        ]);
     }
 }

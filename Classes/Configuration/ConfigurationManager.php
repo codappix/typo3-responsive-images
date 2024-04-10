@@ -40,13 +40,13 @@ final class ConfigurationManager
         return $this->settings;
     }
 
-    public function isValidPath(string $path): bool
+    public function isValidPath(array|string $path): bool
     {
-        return ArrayUtility::isValidPath($this->settings, $path, '.');
+        return ArrayUtility::isValidPath($this->settings, $path);
     }
 
-    public function getByPath(string $path): mixed
+    public function getByPath(array|string $path): mixed
     {
-        return ArrayUtility::getValueByPath($this->settings, $path, '.');
+        return ArrayUtility::getValueByPath($this->settings, $path);
     }
 }

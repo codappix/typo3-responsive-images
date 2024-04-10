@@ -30,21 +30,23 @@ use Codappix\ResponsiveImages\Domain\Model\BackendLayoutInterface;
 class BackendLayoutFactory
 {
     public function __construct(
-        private ConfigurationManager $configurationManager,
+        private readonly ConfigurationManager $configurationManager,
         private readonly ScalingFactory $scalingFactory
     ) {
     }
 
-    public function create(string $configurationPath): BackendLayoutInterface
+    public function create(array $configurationPath): BackendLayoutInterface
     {
         $scaling = $this->scalingFactory->getByConfigurationPath($configurationPath);
 
-        $columns = $this->determineColumns($configurationPath . '.columns');
+        $configurationPath[] = 'columns';
+
+        $columns = $this->determineColumns($configurationPath);
 
         return new BackendLayout($scaling, $columns);
     }
 
-    private function determineColumns(string $configurationPath): array
+    private function determineColumns(array $configurationPath): array
     {
         $columns = $this->configurationManager->getByPath($configurationPath);
         assert(is_array($columns));

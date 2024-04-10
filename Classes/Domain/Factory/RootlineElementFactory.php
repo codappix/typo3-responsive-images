@@ -33,7 +33,7 @@ class RootlineElementFactory
     ) {
     }
 
-    public function create(array $data, string $configurationPath): RootlineElementInterface
+    public function create(array $data, array|string $configurationPath): RootlineElementInterface
     {
         $scaling = $this->scalingFactory->getByConfigurationPath($configurationPath);
 

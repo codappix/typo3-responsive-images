@@ -34,7 +34,7 @@ final class ScalingFactory
     ) {
     }
 
-    public function getByConfigurationPath(string $configurationPath): Scaling
+    public function getByConfigurationPath(array|string $configurationPath): Scaling
     {
         $configuration = $this->configurationManager->getByPath($configurationPath);
         $multiplier = [];

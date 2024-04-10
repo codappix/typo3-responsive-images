@@ -125,7 +125,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     {
         $breakpoints = [];
 
-        $breakpointsByPath = $this->configurationManager->getByPath('breakpoints');
+        $breakpointsByPath = $this->configurationManager->getByPath(['breakpoints']);
 
         if (is_iterable($breakpointsByPath)) {
             foreach ($breakpointsByPath as $breakpointIdentifier => $breakpointData) {
