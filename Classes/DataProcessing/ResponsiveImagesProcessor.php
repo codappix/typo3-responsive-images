@@ -41,8 +41,8 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     private array $contentElementSizes = [];
 
     public function __construct(
-        private BreakpointFactory $breakpointFactory,
-        private RootlineFactory $rootlineFactory
+        private readonly BreakpointFactory $breakpointFactory,
+        private readonly RootlineFactory $rootlineFactory
     ) {
     }
 

@@ -31,7 +31,7 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
 final class ConfigurationManager
 {
     public function __construct(
-        private array $settings
+        private readonly array $settings
     ) {
     }
 

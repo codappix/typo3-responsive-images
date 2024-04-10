@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
- * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or

@@ -31,7 +31,7 @@ final class Breakpoint
 {
     public function __construct(
         private readonly string $identifier,
-        private array $data
+        private readonly array $data
     ) {
     }
 

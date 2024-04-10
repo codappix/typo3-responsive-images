@@ -37,7 +37,7 @@ class RootlineElement implements RootlineElementInterface
         private readonly array $data
     ) {
         if (isset($data['colPos'])) {
-            $this->colPos = $data['colPos'];
+            $this->colPos = (int) $data['colPos'];
         }
     }
 
