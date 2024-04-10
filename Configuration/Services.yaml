@@ -30,7 +30,6 @@ services:
         public: true
 
     Codappix\ResponsiveImages\Configuration\ConfigurationManager:
-        public: true
         arguments:
             $settings: '@extbaseSettings.ResponsiveImages'
 
