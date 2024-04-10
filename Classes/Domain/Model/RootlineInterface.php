@@ -24,7 +24,7 @@ namespace Codappix\ResponsiveImages\Domain\Model;
  * 02110-1301, USA.
  */
 
-interface BackendLayoutInterface extends RootlineElementInterface
+interface RootlineInterface
 {
-    public function getColumns(): array;
+    public function getFinalSize(): array;
 }

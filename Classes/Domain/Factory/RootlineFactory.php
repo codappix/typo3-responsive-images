@@ -24,7 +24,8 @@ namespace Codappix\ResponsiveImages\Domain\Factory;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Domain\Model\BackendLayoutInterface;
+use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
+use Codappix\ResponsiveImages\Domain\Model\Rootline;
 use Codappix\ResponsiveImages\Domain\Model\RootlineElementInterface;
 use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -32,38 +33,36 @@ use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
 final class RootlineFactory
 {
-    private BackendLayoutInterface $backendLayout;
+    public array $columns = [];
+
+    private RootlineElementInterface $backendLayout;
+
+    private RootlineElementInterface $contentElement;
 
     private string $backendLayoutIdentifier;
 
     public function __construct(
+        private readonly ConfigurationManager $configurationManager,
         private readonly ContainerRepository $containerRepository,
         private readonly PageLayoutResolver $pageLayoutResolver,
-        private readonly BackendLayoutFactory $backendLayoutFactory,
         private readonly RootlineElementFactory $rootlineElementFactory
     ) {
     }
 
-    public function getFinalSizes(
+    public function create(
         array $data,
         string $fieldName
-    ): array {
-        $this->determineBackendLayout();
+    ): Rootline {
+        $this->createBackendLayoutRootlineElement();
+        $this->determineBackendLayoutColumns();
 
-        $contentElement = $this->determineContentElement($data, $fieldName);
+        $this->createContentElementRootlineElement($data, $fieldName);
+        $this->determineRootline($this->contentElement);
 
-        $this->determineRootline($contentElement);
-
-        $sizes = $contentElement->getFinalSize([]);
-
-        foreach ($sizes as &$size) {
-            $size = ceil($size);
-        }
-
-        return $sizes;
+        return new Rootline($this->contentElement);
     }
 
-    public function determineContainerColumn(
+    public function createContainerColumnRootlineElement(
         array $data,
         RootlineElementInterface $contentElement
     ): RootlineElementInterface {
@@ -81,7 +80,21 @@ final class RootlineFactory
         return $newContainerColumn;
     }
 
-    private function determineBackendLayout(): void
+    public function determineBackendLayoutColumns(): void
+    {
+        $columns = $this->configurationManager->getByPath(
+            [
+                'backendlayouts',
+                $this->backendLayoutIdentifier,
+                'columns',
+            ]
+        );
+
+        assert(is_array($columns));
+        $this->columns = array_map(static fn ($column): int => (int) $column, array_keys($columns));
+    }
+
+    private function createBackendLayoutRootlineElement(): void
     {
         $tsfe = $GLOBALS['TSFE'];
 
@@ -90,7 +103,8 @@ final class RootlineFactory
             $tsfe->rootLine
         );
 
-        $this->backendLayout = $this->backendLayoutFactory->create(
+        $this->backendLayout = $this->rootlineElementFactory->create(
+            [],
             [
                 'backendlayouts',
                 $this->backendLayoutIdentifier,
@@ -98,7 +112,7 @@ final class RootlineFactory
         );
     }
 
-    private function determineBackendLayoutColumn(RootlineElementInterface $contentElement): void
+    private function createBackendLayoutColumnRootlineElement(RootlineElementInterface $contentElement): void
     {
         $newBackendLayoutColumn = $this->rootlineElementFactory->create(
             [],
@@ -114,9 +128,11 @@ final class RootlineFactory
         $contentElement->setParent($newBackendLayoutColumn);
     }
 
-    private function determineContainer(array $data, RootlineElementInterface $contentElement): RootlineElementInterface
-    {
-        $newContainerColumn = $this->determineContainerColumn($data, $contentElement);
+    private function createContainerRootlineElement(
+        array $data,
+        RootlineElementInterface $contentElement
+    ): RootlineElementInterface {
+        $newContainerColumn = $this->createContainerColumnRootlineElement($data, $contentElement);
 
         $newContainer = $this->rootlineElementFactory->create(
             $data,
@@ -130,11 +146,11 @@ final class RootlineFactory
         return $newContainer;
     }
 
-    private function determineContentElement(
+    private function createContentElementRootlineElement(
         array $data,
         string $fieldName
-    ): RootlineElementInterface {
-        return $this->rootlineElementFactory->create(
+    ): void {
+        $this->contentElement = $this->rootlineElementFactory->create(
             $data,
             [
                 'contentelements',
@@ -146,8 +162,8 @@ final class RootlineFactory
 
     private function determineRootline(RootlineElementInterface $contentElement): void
     {
-        if (in_array($contentElement->getColPos(), $this->backendLayout->getColumns(), true)) {
-            $this->determineBackendLayoutColumn($contentElement);
+        if (in_array($contentElement->getColPos(), $this->columns, true)) {
+            $this->createBackendLayoutColumnRootlineElement($contentElement);
 
             return;
         }
@@ -156,7 +172,7 @@ final class RootlineFactory
             $parentContainer = $contentElement->getData('tx_container_parent');
             assert(is_int($parentContainer));
 
-            $parent = $this->determineContainer(
+            $parent = $this->createContainerRootlineElement(
                 $this->containerRepository->findByIdentifier($parentContainer),
                 $contentElement
             );

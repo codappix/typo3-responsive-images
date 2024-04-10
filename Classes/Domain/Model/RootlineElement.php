@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Codappix\ResponsiveImages\Domain\Model;
 
-use Exception;
-
 /*
  * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
  * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
@@ -25,6 +23,8 @@ use Exception;
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
  */
+
+use Exception;
 
 class RootlineElement implements RootlineElementInterface
 {

@@ -74,7 +74,8 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = $this->rootlineFactory->getFinalSizes($processedData['data'], $fieldName);
+        $rootline = $this->rootlineFactory->create($processedData['data'], $fieldName);
+        $this->contentElementSizes = $rootline->getFinalSize();
         $this->calculateFileDimensions();
 
         $targetFieldName = (string) $cObj->stdWrapValue(
