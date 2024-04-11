@@ -93,7 +93,7 @@ final class RootlineElement implements RootlineElementInterface
         return $this->colPos;
     }
 
-    protected function multiplyArray(array $factor1, array $factor2): array
+    private function multiplyArray(array $factor1, array $factor2): array
     {
         if (empty($factor1)) {
             return $factor2;
