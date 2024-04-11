@@ -28,7 +28,7 @@ use Exception;
 
 class RootlineElement implements RootlineElementInterface
 {
-    protected int $colPos;
+    protected ?int $colPos = null;
 
     private ?RootlineElementInterface $parent = null;
 
@@ -88,7 +88,7 @@ class RootlineElement implements RootlineElementInterface
         return $this->data[$dataIdentifier];
     }
 
-    public function getColPos(): int
+    public function getColPos(): ?int
     {
         return $this->colPos;
     }

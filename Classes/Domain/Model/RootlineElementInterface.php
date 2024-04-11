@@ -34,7 +34,7 @@ interface RootlineElementInterface
 
     public function getFinalSize(array $multiplier): array;
 
-    public function getColPos(): int;
+    public function getColPos(): ?int;
 
     public function getData(?string $dataIdentifier = null): mixed;
 }
