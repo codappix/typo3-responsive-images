@@ -28,6 +28,7 @@ use Codappix\ResponsiveImages\Domain\Model\Rootline;
 use Codappix\ResponsiveImages\Domain\Model\RootlineElementInterface;
 use Codappix\ResponsiveImages\Domain\Repository\ContainerRepository;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageLayoutResolver;
 
 final class RootlineFactory
@@ -50,9 +51,10 @@ final class RootlineFactory
 
     public function create(
         array $data,
-        string $fieldName
+        string $fieldName,
+        TypoScriptFrontendController $tsfe
     ): Rootline {
-        $this->createBackendLayoutRootlineElement();
+        $this->createBackendLayoutRootlineElement($tsfe);
         $this->determineBackendLayoutColumns();
 
         $this->createContentElementRootlineElement($data, $fieldName);
@@ -93,10 +95,8 @@ final class RootlineFactory
         $this->columns = array_map(static fn ($column): int => (int) $column, array_keys($columns));
     }
 
-    private function createBackendLayoutRootlineElement(): void
+    private function createBackendLayoutRootlineElement(TypoScriptFrontendController $tsfe): void
     {
-        $tsfe = $GLOBALS['TSFE'];
-
         $this->backendLayoutIdentifier = $this->pageLayoutResolver->getLayoutForPage(
             $tsfe->page,
             $tsfe->rootLine

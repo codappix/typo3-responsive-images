@@ -25,9 +25,11 @@ namespace Codappix\ResponsiveImages\DataProcessing;
 
 use Codappix\ResponsiveImages\Domain\Factory\BreakpointFactory;
 use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
+use RuntimeException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 final class ResponsiveImagesProcessor implements DataProcessorInterface
 {
@@ -73,7 +75,12 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $rootline = $this->rootlineFactory->create($processedData['data'], $fieldName);
+        $tsfe = $cObj->getRequest()->getAttribute('frontend.controller');
+        if (!$tsfe instanceof TypoScriptFrontendController) {
+            throw new RuntimeException('Could not fetch TypoScriptFrontendController from request.', 1712819889);
+        }
+
+        $rootline = $this->rootlineFactory->create($processedData['data'], $fieldName, $tsfe);
         $this->contentElementSizes = $rootline->getFinalSize();
         $this->calculateFileDimensions();
 
