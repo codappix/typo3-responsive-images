@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes\BackendLayout;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
  * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
@@ -23,51 +23,45 @@ namespace Codappix\ResponsiveImages\Sizes\BackendLayout;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Sizes\Multiplier;
-
-class Column
+/**
+ * This class is used to generate the necessary config of the rendering
+ * process.
+ */
+final class Breakpoint
 {
-    /**
-     * @var float[]
-     */
-    private array $multiplier = [];
-
-    /**
-     * @var int[]
-     */
-    private array $sizes = [];
-
     public function __construct(
-        private readonly int $identifier,
-        array $data
+        private readonly string $identifier,
+        private readonly array $data
     ) {
-        if (isset($data['multiplier'])) {
-            $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $data['multiplier']);
-        }
-
-        if (isset($data['sizes'])) {
-            $this->sizes = array_map(static fn ($size): int => (int) $size, $data['sizes']);
-        }
     }
 
-    public function getIdentifier(): int
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
 
-    /**
-     * @return float[]
-     */
-    public function getMultiplier(): array
+    public function getMediaQuery(): string
     {
-        return $this->multiplier;
+        if (isset($this->data['min'], $this->data['max'])) {
+            return implode(' and ', [
+                '(min-width: ' . $this->data['min'] . 'px)',
+                '(max-width: ' . $this->data['max'] . 'px)',
+            ]);
+        }
+
+        if (isset($this->data['min'])) {
+            return '(min-width: ' . $this->data['min'] . 'px)';
+        }
+
+        if (isset($this->data['max'])) {
+            return '(max-width: ' . $this->data['max'] . 'px)';
+        }
+
+        return '';
     }
 
-    /**
-     * @return int[]
-     */
-    public function getSizes(): array
+    public function getCropVariant(): string
     {
-        return $this->sizes;
+        return $this->data['cropVariant'] ?? 'default';
     }
 }

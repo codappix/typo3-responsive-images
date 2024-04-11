@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Configuration;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
- * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,30 +23,21 @@ namespace Codappix\ResponsiveImages\Configuration;
  * 02110-1301, USA.
  */
 
-use TYPO3\CMS\Core\Utility\ArrayUtility;
-
-/**
- * Helper class to get all extension specific settings.
- */
-final class ConfigurationManager
+final class Rootline implements RootlineInterface
 {
     public function __construct(
-        private readonly array $settings
+        private readonly RootlineElementInterface $rootlineElement
     ) {
     }
 
-    public function get(): array
+    public function getFinalSize(): array
     {
-        return $this->settings;
-    }
+        $finalSize = $this->rootlineElement->getFinalSize([]);
 
-    public function isValidPath(array|string $path): bool
-    {
-        return ArrayUtility::isValidPath($this->settings, $path);
-    }
+        foreach ($finalSize as &$size) {
+            $size = ceil($size);
+        }
 
-    public function getByPath(array|string $path): mixed
-    {
-        return ArrayUtility::getValueByPath($this->settings, $path);
+        return $finalSize;
     }
 }

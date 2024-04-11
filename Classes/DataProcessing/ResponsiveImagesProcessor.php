@@ -23,18 +23,16 @@ namespace Codappix\ResponsiveImages\DataProcessing;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
-use Codappix\ResponsiveImages\Sizes\Breakpoint;
-use Codappix\ResponsiveImages\Sizes\Rootline;
+use Codappix\ResponsiveImages\Domain\Factory\BreakpointFactory;
+use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
+use RuntimeException;
 use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 final class ResponsiveImagesProcessor implements DataProcessorInterface
 {
-    private readonly ConfigurationManager $configurationManager;
-
     /**
      * @var FileInterface[]
      */
@@ -44,9 +42,10 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
 
     private array $contentElementSizes = [];
 
-    public function __construct()
-    {
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    public function __construct(
+        private readonly BreakpointFactory $breakpointFactory,
+        private readonly RootlineFactory $rootlineFactory
+    ) {
     }
 
     public function process(
@@ -54,7 +53,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         array $contentObjectConfiguration,
         array $processorConfiguration,
         array $processedData
-    ) {
+    ): array {
         if (isset($processorConfiguration['if.']) && !$cObj->checkIf($processorConfiguration['if.'])) {
             return $processedData;
         }
@@ -76,7 +75,13 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return $processedData;
         }
 
-        $this->contentElementSizes = (new Rootline($processedData['data'], $fieldName))->getFinalSizes();
+        $tsfe = $cObj->getRequest()->getAttribute('frontend.controller');
+        if (!$tsfe instanceof TypoScriptFrontendController) {
+            throw new RuntimeException('Could not fetch TypoScriptFrontendController from request.', 1712819889);
+        }
+
+        $rootline = $this->rootlineFactory->create($processedData['data'], $fieldName, $tsfe);
+        $this->contentElementSizes = $rootline->getFinalSize();
         $this->calculateFileDimensions();
 
         $targetFieldName = (string) $cObj->stdWrapValue(
@@ -106,9 +111,8 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
     {
         $fileDimensions = [];
 
-        $breakpoints = $this->getBreakpoints();
+        $breakpoints = $this->breakpointFactory->getByConfigurationPath(['breakpoints']);
 
-        /** @var Breakpoint $breakpoint */
         foreach ($breakpoints as $breakpoint) {
             if (isset($this->contentElementSizes[$breakpoint->getIdentifier()]) === false) {
                 continue;
@@ -121,20 +125,5 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         }
 
         return $fileDimensions;
-    }
-
-    private function getBreakpoints(): array
-    {
-        $breakpoints = [];
-
-        $breakpointsByPath = $this->configurationManager->getByPath('breakpoints');
-
-        if (is_iterable($breakpointsByPath)) {
-            foreach ($breakpointsByPath as $breakpointIdentifier => $breakpointData) {
-                $breakpoints[$breakpointIdentifier] = new Breakpoint($breakpointIdentifier, $breakpointData);
-            }
-        }
-
-        return $breakpoints;
     }
 }

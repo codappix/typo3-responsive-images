@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Configuration;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
- * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,30 +23,42 @@ namespace Codappix\ResponsiveImages\Configuration;
  * 02110-1301, USA.
  */
 
-use TYPO3\CMS\Core\Utility\ArrayUtility;
-
-/**
- * Helper class to get all extension specific settings.
- */
-final class ConfigurationManager
+final class Scaling
 {
-    public function __construct(
-        private readonly array $settings
-    ) {
+    /**
+     * @var float[]
+     */
+    private array $multiplier = [];
+
+    /**
+     * @var int[]
+     */
+    private array $sizes = [];
+
+    public function __construct(array $multiplier, array $sizes)
+    {
+        if (!empty($multiplier)) {
+            $this->multiplier = array_map('floatval', $multiplier);
+        }
+
+        if (!empty($sizes)) {
+            $this->sizes = array_map('intval', $sizes);
+        }
     }
 
-    public function get(): array
+    /**
+     * @return float[]
+     */
+    public function getMultiplier(): array
     {
-        return $this->settings;
+        return $this->multiplier;
     }
 
-    public function isValidPath(array|string $path): bool
+    /**
+     * @return int[]
+     */
+    public function getSizes(): array
     {
-        return ArrayUtility::isValidPath($this->settings, $path);
-    }
-
-    public function getByPath(array|string $path): mixed
-    {
-        return ArrayUtility::getValueByPath($this->settings, $path);
+        return $this->sizes;
     }
 }

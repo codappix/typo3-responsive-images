@@ -1,7 +1,7 @@
 plugin.tx_responsiveimages {
     settings {
         container {
-            example_container-2col-50-50 {
+            example_container-2col-50-50-with-container-size {
                 columns {
                     101 {
                         multiplier {
@@ -23,12 +23,19 @@ plugin.tx_responsiveimages {
                         }
                     }
                 }
+                sizes {
+                    xs = 600
+                    sm = 900
+                    md = 1200
+                    lg = 1500
+                    xl = 1800
+                }
             }
         }
     }
 }
 
-tt_content.example_container-2col-50-50 < lib.containerElement
-tt_content.example_container-2col-50-50 {
+tt_content.example_container-2col-50-50-with-container-size < lib.containerElement
+tt_content.example_container-2col-50-50-with-container-size {
     templateName = 2col-50-50
 }

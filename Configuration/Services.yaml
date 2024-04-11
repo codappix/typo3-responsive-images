@@ -8,6 +8,14 @@ services:
     Codappix\ResponsiveImages\:
         resource: '../Classes/*'
 
+    dbconnection.tt_content:
+        class: 'TYPO3\CMS\Core\Database\Connection'
+        factory:
+            - '@TYPO3\CMS\Core\Database\ConnectionPool'
+            - 'getConnectionForTable'
+        arguments:
+            - 'tt_content'
+
     extbaseSettings.ResponsiveImages:
         class: 'array'
         factory:
@@ -18,7 +26,13 @@ services:
             $extensionName: 'ResponsiveImages'
             $pluginName: ''
 
-    Codappix\ResponsiveImages\Configuration\ConfigurationManager:
+    Codappix\ResponsiveImages\DataProcessing\ResponsiveImagesProcessor:
         public: true
+
+    Codappix\ResponsiveImages\Configuration\ConfigurationManager:
         arguments:
             $settings: '@extbaseSettings.ResponsiveImages'
+
+    Codappix\ResponsiveImages\Domain\Repository\ContainerRepository:
+        arguments:
+            - '@dbconnection.tt_content'

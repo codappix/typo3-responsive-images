@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Codappix\ResponsiveImages\Sizes;
+namespace Codappix\ResponsiveImages\Domain\Model;
 
 /*
- * Copyright (C) 2020 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Justus Moroni <justus.moroni@codappix.com>
+ * Copyright (C) 2024 Daniel Gohlke <daniel.gohlke@codappix.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,16 +24,17 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-/**
- * This class only provides the functionality to parse a string to a correct
- * float value.
- */
-final class Multiplier
+interface RootlineElementInterface
 {
-    public static function parse(string $value): float
-    {
-        $value = str_replace(',', '.', $value);
+    public function getParent(): ?self;
 
-        return (float) $value;
-    }
+    public function setParent(self $rootlineElement): void;
+
+    public function getScaling(): Scaling;
+
+    public function getFinalSize(array $multiplier): array;
+
+    public function getColPos(): ?int;
+
+    public function getData(?string $dataIdentifier = null): mixed;
 }
