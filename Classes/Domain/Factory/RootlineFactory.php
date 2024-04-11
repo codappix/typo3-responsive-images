@@ -92,7 +92,7 @@ final class RootlineFactory
         );
 
         assert(is_array($columns));
-        $this->columns = array_map(static fn ($column): int => (int) $column, array_keys($columns));
+        $this->columns = array_map('intval', array_keys($columns));
     }
 
     private function createBackendLayoutRootlineElement(TypoScriptFrontendController $tsfe): void

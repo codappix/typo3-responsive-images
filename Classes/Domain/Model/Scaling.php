@@ -38,11 +38,11 @@ final class Scaling
     public function __construct(array $multiplier, array $sizes)
     {
         if (!empty($multiplier)) {
-            $this->multiplier = array_map(static fn ($multiplier): float => (float) $multiplier, $multiplier);
+            $this->multiplier = array_map('floatval', $multiplier);
         }
 
         if (!empty($sizes)) {
-            $this->sizes = array_map(static fn ($size): int => (int) $size, $sizes);
+            $this->sizes = array_map('intval', $sizes);
         }
     }
 
