@@ -23,7 +23,7 @@ namespace Codappix\ResponsiveImages\Domain\Model;
  * 02110-1301, USA.
  */
 
-class Rootline implements RootlineInterface
+final class Rootline implements RootlineInterface
 {
     public function __construct(
         private readonly RootlineElementInterface $rootlineElement

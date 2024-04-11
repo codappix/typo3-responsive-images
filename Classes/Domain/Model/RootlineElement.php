@@ -26,9 +26,9 @@ namespace Codappix\ResponsiveImages\Domain\Model;
 
 use Exception;
 
-class RootlineElement implements RootlineElementInterface
+final class RootlineElement implements RootlineElementInterface
 {
-    protected ?int $colPos = null;
+    private ?int $colPos = null;
 
     private ?RootlineElementInterface $parent = null;
 

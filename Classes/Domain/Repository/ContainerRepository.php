@@ -26,7 +26,7 @@ namespace Codappix\ResponsiveImages\Domain\Repository;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Error\Exception;
 
-class ContainerRepository
+final class ContainerRepository
 {
     public function __construct(
         private readonly Connection $connection

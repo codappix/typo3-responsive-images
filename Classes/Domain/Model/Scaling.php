@@ -23,7 +23,7 @@ namespace Codappix\ResponsiveImages\Domain\Model;
  * 02110-1301, USA.
  */
 
-class Scaling
+final class Scaling
 {
     /**
      * @var float[]

@@ -26,7 +26,7 @@ namespace Codappix\ResponsiveImages\Domain\Factory;
 use Codappix\ResponsiveImages\Domain\Model\RootlineElement;
 use Codappix\ResponsiveImages\Domain\Model\RootlineElementInterface;
 
-class RootlineElementFactory
+final class RootlineElementFactory
 {
     public function __construct(
         private readonly ScalingFactory $scalingFactory
