@@ -10,8 +10,6 @@ namespace Codappix\ResponsiveImages\Sizes;
  */
 interface ContentElementInterface
 {
-    public function __construct(array $data);
-
     public function getData(?string $dataIdentifier = null): mixed;
 
     public function getContentType(): string;
@@ -21,4 +19,8 @@ interface ContentElementInterface
     public function setParent(self $contentElement): void;
 
     public function getParent(): ?self;
+
+    public function getSizes(): array;
+
+    public function getMultiplier(): array;
 }

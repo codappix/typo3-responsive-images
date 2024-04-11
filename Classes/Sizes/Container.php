@@ -23,27 +23,17 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use Codappix\ResponsiveImages\Configuration\ConfigurationManager;
 use Codappix\ResponsiveImages\Sizes\BackendLayout\Column;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-final class Container extends ContentElement
+final class Container extends AbstractContentElement
 {
-    private readonly string $layout;
-
     private array $columns = [];
 
     private Column $activeColumn;
 
-    private readonly ConfigurationManager $configurationManager;
-
     public function __construct(array $data)
     {
         parent::__construct($data);
-
-        $this->layout = $data['CType'];
-
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
 
         $this->determineColumns();
     }
@@ -68,10 +58,27 @@ final class Container extends ContentElement
         return $this->activeColumn;
     }
 
+    /**
+     * @return float[]
+     */
+    public function getMultiplier(): array
+    {
+        return $this->getActiveColumn()->getMultiplier();
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSizes(): array
+    {
+        return $this->getActiveColumn()->getSizes();
+    }
+
     private function determineColumns(): void
     {
         $sizesPath = implode('.', [
-            $this->layout,
+            'container',
+            $this->contentType,
             'columns',
         ]);
 

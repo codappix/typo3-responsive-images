@@ -1,34 +1,36 @@
 plugin.tx_responsiveimages {
     settings {
-        example_container-3col {
-            columns {
-                101 {
-                    multiplier {
-                        xs = 1
-                        sm = 1
-                        md = 0,333
-                        lg = 0,333
-                        xl = 0,333
+        container {
+            example_container-3col {
+                columns {
+                    101 {
+                        multiplier {
+                            xs = 1
+                            sm = 1
+                            md = 0,333
+                            lg = 0,333
+                            xl = 0,333
+                        }
                     }
-                }
 
-                102 {
-                    multiplier {
-                        xs = 1
-                        sm = 1
-                        md = 0,333
-                        lg = 0,333
-                        xl = 0,333
+                    102 {
+                        multiplier {
+                            xs = 1
+                            sm = 1
+                            md = 0,333
+                            lg = 0,333
+                            xl = 0,333
+                        }
                     }
-                }
 
-                103 {
-                    multiplier {
-                        xs = 1
-                        sm = 1
-                        md = 0,333
-                        lg = 0,333
-                        xl = 0,333
+                    103 {
+                        multiplier {
+                            xs = 1
+                            sm = 1
+                            md = 0,333
+                            lg = 0,333
+                            xl = 0,333
+                        }
                     }
                 }
             }

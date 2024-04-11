@@ -23,61 +23,55 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
-use TYPO3\CMS\Core\Error\Exception;
-
-/**
- * This class represents the content elements in the rootline of the current
- * content element which is rendered.
- */
-class ContentElement implements ContentElementInterface
+class ContentElement extends AbstractContentElement
 {
-    protected readonly string $contentType;
+    /**
+     * @var float[]
+     */
+    private array $multiplier = [];
 
-    protected readonly int $colPos;
-
-    protected ContentElementInterface $parent;
+    /**
+     * @var int[]
+     */
+    private array $sizes = [];
 
     public function __construct(
-        private readonly array $data
+        array $data,
+        private readonly string $fieldName
     ) {
-        $this->contentType = $data['CType'];
-        $this->colPos = $data['colPos'];
+        parent::__construct($data);
+
+        $this->readConfiguration();
     }
 
-    public function getData(?string $dataIdentifier = null): mixed
+    public function getSizes(): array
     {
-        if ($dataIdentifier === null) {
-            return $this->data;
+        return $this->sizes;
+    }
+
+    public function getMultiplier(): array
+    {
+        return $this->multiplier;
+    }
+
+    public function readConfiguration(): void
+    {
+        $configurationPath = implode('.', [
+            'contentelements',
+            $this->contentType,
+            $this->fieldName,
+        ]);
+
+        $configuration = $this->configurationManager->getByPath($configurationPath);
+
+        if (is_array($configuration)) {
+            if (isset($configuration['multiplier'])) {
+                $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $configuration['multiplier']);
+            }
+
+            if (isset($configuration['sizes'])) {
+                $this->sizes = array_map(static fn ($size): int => (int) $size, $configuration['sizes']);
+            }
         }
-
-        if (isset($this->data[$dataIdentifier]) === false) {
-            throw new Exception('No data found for key ' . $dataIdentifier . ' in $this->data.');
-        }
-
-        return $this->data[$dataIdentifier];
-    }
-
-    public function getContentType(): string
-    {
-        return $this->contentType;
-    }
-
-    public function getColPos(): int
-    {
-        return $this->colPos;
-    }
-
-    public function setParent(ContentElementInterface $contentElement): void
-    {
-        if ($contentElement instanceof Container) {
-            $contentElement->setActiveColumn($contentElement->getColumn($this->colPos));
-        }
-
-        $this->parent = $contentElement;
-    }
-
-    public function getParent(): ?ContentElementInterface
-    {
-        return $this->parent;
     }
 }

@@ -23,6 +23,7 @@ namespace Codappix\ResponsiveImages\Sizes;
  * 02110-1301, USA.
  */
 
+use B13\Container\Tca\Registry;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
@@ -41,9 +42,12 @@ final class Rootline
 
     private array $finalSizes = [];
 
-    public function __construct(array $data)
+    private string $fieldName;
+
+    public function __construct(array $data, string $fieldName)
     {
         $this->determineBackendLayout();
+        $this->fieldName = $fieldName;
         $this->contentElement = $this->determineContentElement($data);
 
         $this->determineRootline();
@@ -53,21 +57,6 @@ final class Rootline
     public function getFinalSizes(): array
     {
         return $this->finalSizes;
-    }
-
-    public function getMultiplier(): array
-    {
-        $multiplier = [
-            $this->backendLayout->getActiveColumn()->getMultiplier(),
-        ];
-
-        foreach (array_reverse($this->rootline) as $contentElement) {
-            if ($contentElement instanceof Container) {
-                $multiplier[] = $contentElement->getActiveColumn()->getMultiplier();
-            }
-        }
-
-        return $multiplier;
     }
 
     private function determineBackendLayout(): void
@@ -83,11 +72,14 @@ final class Rootline
 
     private function determineContentElement(array $data): ContentElementInterface
     {
-        if (str_contains((string) $data['CType'], '_container-')) {
+        if (
+            class_exists(Registry::class)
+            && GeneralUtility::makeInstance(Registry::class)->isContainerElement($data['CType'])
+        ) {
             return new Container($data);
         }
 
-        return new ContentElement($data);
+        return new ContentElement($data, $this->fieldName);
     }
 
     private function determineRootline(): void
@@ -144,10 +136,35 @@ final class Rootline
 
     private function calculateSizes(): void
     {
-        $sizes = $this->backendLayout->getSizes();
+        [$sizes, $multiplier] = $this->getSizesAndMultiplierFromRootline();
 
-        $multiplier = $this->getMultiplier();
+        $this->calculateFinalSizes($sizes, $multiplier);
+    }
 
+    private function getSizesAndMultiplierFromRootline(): array
+    {
+        $multiplier = [];
+        $sizes = [];
+
+        foreach ($this->rootline as $contentElement) {
+            if ($contentElement instanceof ContentElementInterface) {
+                $sizes = $contentElement->getSizes();
+                if (!empty($sizes)) {
+                    break;
+                }
+                $multiplier[] = $contentElement->getMultiplier();
+            }
+        }
+
+        if (empty($sizes)) {
+            $sizes = $this->backendLayout->getSizes();
+        }
+
+        return [$sizes, $multiplier];
+    }
+
+    private function calculateFinalSizes(array $sizes, array $multiplier): void
+    {
         foreach ($sizes as $sizeName => &$size) {
             foreach ($multiplier as $multiplierItem) {
                 if (isset($multiplierItem[$sizeName]) === false) {
@@ -156,6 +173,8 @@ final class Rootline
 
                 $size *= $multiplierItem[$sizeName];
             }
+
+            $size = ceil($size);
         }
 
         $this->finalSizes = $sizes;

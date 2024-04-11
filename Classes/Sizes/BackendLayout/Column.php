@@ -30,13 +30,24 @@ class Column
     /**
      * @var float[]
      */
-    private readonly array $multiplier;
+    private array $multiplier = [];
+
+    /**
+     * @var int[]
+     */
+    private array $sizes = [];
 
     public function __construct(
         private readonly int $identifier,
         array $data
     ) {
-        $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $data['multiplier']);
+        if (isset($data['multiplier'])) {
+            $this->multiplier = array_map(static fn ($multiplier): float => Multiplier::parse($multiplier), $data['multiplier']);
+        }
+
+        if (isset($data['sizes'])) {
+            $this->sizes = array_map(static fn ($size): int => (int) $size, $data['sizes']);
+        }
     }
 
     public function getIdentifier(): int
@@ -50,5 +61,13 @@ class Column
     public function getMultiplier(): array
     {
         return $this->multiplier;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getSizes(): array
+    {
+        return $this->sizes;
     }
 }
