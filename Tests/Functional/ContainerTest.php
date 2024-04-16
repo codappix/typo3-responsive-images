@@ -42,8 +42,10 @@ class ContainerTest extends FunctionalTestCase
         $this->testExtensionsToLoad = [
             'b13/container',
             'codappix/typo3-responsive-images',
+            'contentblocks/content-blocks',
             'typo3conf/ext/responsive_images/Tests/Fixtures/base_example',
             'typo3conf/ext/responsive_images/Tests/Fixtures/container_example',
+            'typo3conf/ext/responsive_images/Tests/Fixtures/content_blocks_example',
         ];
 
         $this->pathsToLinkInTestInstance = [
@@ -60,6 +62,8 @@ class ContainerTest extends FunctionalTestCase
             'EXT:base_example/Configuration/TypoScript/Setup.typoscript',
             'EXT:base_example/Configuration/TypoScript/Rendering.typoscript',
             'EXT:container_example/Configuration/TypoScript/Setup.typoscript',
+            'EXT:content_blocks_example/Configuration/TypoScript/ContentElements/codappix_image.typoscript',
+            'EXT:content_blocks_example/Configuration/TypoScript/ContentElements/codappix_imagefixedwidth.typoscript',
         ]);
     }
 
@@ -211,7 +215,25 @@ class ContainerTest extends FunctionalTestCase
     #[DataProvider(methodName: 'imageScalingValuesDataProvider')]
     public function imageIsScaledCorrectly(string $phpDataSet, array $expectedValues): void
     {
-        $this->importPHPDataSet(__DIR__ . '/../Fixtures/container_example/Test/Fixtures/' . $phpDataSet);
+        $this->importPHPDataSet(__DIR__ . '/../Fixtures/container_example/Test/Fixtures/Content/' . $phpDataSet);
+
+        $request = new InternalRequest();
+        $request = $request->withPageId(2);
+
+        $result = $this->executeFrontendSubRequest($request);
+
+        self::assertSame(200, $result->getStatusCode());
+
+        foreach ($expectedValues as $expectedValue) {
+            self::assertStringContainsString($expectedValue, (string) $result->getBody());
+        }
+    }
+
+    #[Test]
+    #[DataProvider(methodName: 'imageScalingValuesDataProvider')]
+    public function contentBlocksImageIsScaledCorrectly(string $phpDataSet, array $expectedValues): void
+    {
+        $this->importPHPDataSet(__DIR__ . '/../Fixtures/container_example/Test/Fixtures/ContentBlocks/' . $phpDataSet);
 
         $request = new InternalRequest();
         $request = $request->withPageId(2);
