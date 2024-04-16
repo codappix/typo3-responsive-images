@@ -1,0 +1,26 @@
+tt_content.codappix_imagefixedwidth {
+    dataProcessing {
+        100 = Codappix\ResponsiveImages\DataProcessing\ResponsiveImagesProcessor
+        100 {
+            fieldName = image
+        }
+    }
+}
+
+plugin.tx_responsiveimages {
+    settings {
+        contentelements {
+            codappix_imagefixedwidth {
+                image {
+                    sizes {
+                        xs = 600
+                        sm = 900
+                        md = 1200
+                        lg = 1600
+                        xl = 1600
+                    }
+                }
+            }
+        }
+    }
+}

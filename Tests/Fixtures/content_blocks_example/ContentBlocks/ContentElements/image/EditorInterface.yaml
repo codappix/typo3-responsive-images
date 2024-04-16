@@ -1,0 +1,12 @@
+name: codappix/image
+title: codappix/image
+description: 'Description for Content Element codappix/image'
+group: common
+prefixFields: true
+prefixType: full
+fields:
+  -
+    identifier: image
+    useExistingField: true
+    type: File
+    allowed: common-image-types
