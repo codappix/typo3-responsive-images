@@ -36,6 +36,7 @@ class ContentBlocksTest extends FunctionalTestCase
     protected function setUp(): void
     {
         $this->coreExtensionsToLoad = [
+            'fluid_styled_content',
         ];
 
         $this->testExtensionsToLoad = [
