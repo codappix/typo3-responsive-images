@@ -35,8 +35,6 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
 {
     private array $processedData;
 
-    private ContentBlockData|array $data;
-
     public function __construct(
         private readonly ResponsiveImageService $responsiveImageService,
         private readonly FileRepository $fileRepository
@@ -54,7 +52,6 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         }
 
         $this->processedData = $processedData;
-        $this->data = $processedData['data'];
 
         $filesDataKey = (string) $cObj->stdWrapValue(
             'filesDataKey',
@@ -86,12 +83,12 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         }
 
         if (
-            $this->data instanceof ContentBlockData
+            $this->processedData['data'] instanceof ContentBlockData
         ) {
-            assert(is_array($this->data->_raw));
-            $data = $this->data->_raw;
+            assert(is_array($this->processedData['data']->_raw));
+            $data = $this->processedData['data']->_raw;
         } else {
-            $data = $this->data;
+            $data = $this->processedData['data'];
         }
 
         $processedData[$targetFieldName] = $this->responsiveImageService->getCalculatedFiles($files, $data, $fieldName, $tsfe);
@@ -112,22 +109,14 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             return [];
         }
 
-        $uid = $this->getFromData('uid');
-        assert(is_int($uid));
+        if ($this->processedData['data'] instanceof ContentBlockData) {
+            return $this->processedData['data']->{$fieldName};
+        }
 
         return $this->fileRepository->findByRelation(
             'tt_content',
             $fieldName,
-            $uid
+            $this->processedData['data']['uid']
         );
-    }
-
-    private function getFromData(string $key): mixed
-    {
-        if ($this->data instanceof ContentBlockData) {
-            return $this->data->{$key};
-        }
-
-        return $this->data[$key];
     }
 }
