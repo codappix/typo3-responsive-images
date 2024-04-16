@@ -11,6 +11,5 @@ In this development state the extension is only used in one project.
 
 The extension does not yet:
 - work out of the box without configuration.
-- support content block grids.
 - provide flexible enough configuration for more use cases.
 - support EXT:fluid_styled_content.
