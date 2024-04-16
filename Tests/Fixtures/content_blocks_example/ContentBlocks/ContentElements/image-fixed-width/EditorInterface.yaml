@@ -1,0 +1,12 @@
+name: codappix/image-fixed-width
+title: codappix/image-fixed-width
+description: 'Description for Content Element codappix/image-fixed-width'
+group: common
+prefixFields: true
+prefixType: full
+fields:
+  -
+    identifier: image
+    useExistingField: true
+    type: File
+    allowed: common-image-types

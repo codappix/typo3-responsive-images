@@ -1,0 +1,49 @@
+plugin.tx_responsiveimages {
+    settings {
+        breakpoints {
+            xs {
+                cropVariant = mobile
+                max = 480
+            }
+            sm {
+                cropVariant = mobile
+                max = 767
+            }
+            md {
+                cropVariant = tablet
+                max = 991
+            }
+            lg {
+                cropVariant = default
+                max = 1479
+            }
+            xl {
+                cropVariant = large
+                min = 1480
+            }
+        }
+
+        backendlayouts {
+            pagets__MainTemplate {
+                sizes {
+                    xs = 734
+                    sm = 704
+                    md = 924
+                    lg = 1124
+                    xl = 1124
+                }
+                columns {
+                    0 {
+                        multiplier {
+                            xs = 1
+                            sm = 1
+                            md = 1
+                            lg = 1
+                            xl = 1
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+tt_content.codappix_image {
+    dataProcessing {
+        100 = Codappix\ResponsiveImages\DataProcessing\ResponsiveImagesProcessor
+        100 {
+            fieldName = image
+        }
+    }
+}
+
+plugin.tx_responsiveimages {
+    settings {
+        contentelements {
+            codappix_image {
+                image {
+                    multiplier {
+                        xs = 1
+                        sm = 1
+                        md = 1
+                        lg = 1
+                        xl = 0.5
+                    }
+                }
+            }
+        }
+    }
+}

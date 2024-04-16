@@ -1,0 +1,15 @@
+{
+    "name": "codappix/content_blocks_example",
+    "description": "Add a content blocks example for frontend tests",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "typo3/cms-core": "*",
+        "codappix/typo3-responsive-images": "*"
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "content_blocks_example"
+        }
+    }
+}

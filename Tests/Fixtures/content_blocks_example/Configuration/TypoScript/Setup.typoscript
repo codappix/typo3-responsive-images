@@ -1,0 +1,2 @@
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:content_blocks_example/Configuration/TypoScript/ContentElements/">
+<INCLUDE_TYPOSCRIPT: source="DIR:EXT:content_blocks_example/Configuration/TypoScript/Extensions/">

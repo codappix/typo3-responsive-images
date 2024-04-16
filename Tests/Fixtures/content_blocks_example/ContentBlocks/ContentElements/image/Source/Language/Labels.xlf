@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file datatype="plaintext" original="Labels.xlf" source-language="en" date="2024-04-16T13:20:57+00:00" product-name="codappix/image">
+		<header/>
+		<body>
+			<trans-unit id="title" resname="title">
+				<source>codappix/image</source>
+			</trans-unit>
+			<trans-unit id="description" resname="description">
+				<source>Description for Content Element codappix/image</source>
+			</trans-unit>
+			<trans-unit id="image.label" resname="image.label">
+				<source>Custom image label</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
