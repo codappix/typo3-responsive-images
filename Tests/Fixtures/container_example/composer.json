@@ -3,6 +3,11 @@
     "description": "Add a container example for frontend tests",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
+    "autoload-dev": {
+        "psr-4": {
+            "Codappix\\ContainerExample\\Tests\\": "Tests/"
+        }
+    },
     "require": {
         "typo3/cms-core": "*",
         "b13/container": "*",
