@@ -80,11 +80,8 @@ jobs:
       matrix:
         include:
           - php-version: '8.1'
-            typo3-version: '^12.4'
           - php-version: '8.2'
-            typo3-version: '^12.4'
           - php-version: '8.3'
-            typo3-version: '^12.4'
     steps:
       - uses: actions/checkout@v4
 
@@ -95,8 +92,7 @@ jobs:
           tools: composer:v2
 
       - name: Install dependencies with expected TYPO3 version
-        run: |-
-          composer require --no-interaction --prefer-dist --no-progress "typo3/cms-core:${{ matrix.typo3-version }}" "typo3/cms-extbase:${{ matrix.typo3-version }}" "typo3/cms-frontend:${{ matrix.typo3-version }}" "typo3/cms-fluid-styled-content:${{ matrix.typo3-version }}"
+        run: composer update --no-interaction --prefer-dist --no-progress
 
       - name: Code Quality (by PHPStan)
         run: ./vendor/bin/phpstan analyse
@@ -110,14 +106,8 @@ jobs:
       matrix:
         include:
           - php-version: '8.1'
-            typo3-version: '^12.4'
-            db-version: '8'
           - php-version: '8.2'
-            typo3-version: '^12.4'
-            db-version: '8'
           - php-version: '8.3'
-            typo3-version: '^12.4'
-            db-version: '8'
     steps:
       - uses: actions/checkout@v4
 
@@ -130,7 +120,7 @@ jobs:
       - name: Setup MySQL
         uses: mirromutth/mysql-action@v1.1
         with:
-          mysql version: "${{ matrix.db-version }}"
+          mysql version: "8"
           mysql database: 'typo3'
           mysql root password: 'root'
 
@@ -141,7 +131,7 @@ jobs:
           done
 
       - name: Install dependencies
-        run: composer require --no-interaction --prefer-dist --no-progress "typo3/cms-backend:${{ matrix.typo3-version }}" "typo3/cms-core:${{ matrix.typo3-version }}" "typo3/cms-extbase:${{ matrix.typo3-version }}" "typo3/cms-frontend:${{ matrix.typo3-version }}" "typo3/cms-fluid-styled-content:${{ matrix.typo3-version }}"
+        run: composer update --no-interaction --prefer-dist --no-progress
 
       - name: PHPUnit Tests
         run: |-
