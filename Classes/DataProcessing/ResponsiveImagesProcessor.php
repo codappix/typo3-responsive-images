@@ -50,7 +50,8 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         private readonly FileRepository $fileRepository,
         private readonly BreakpointFactory $breakpointFactory,
         private readonly RootlineFactory $rootlineFactory
-    ) {}
+    ) {
+    }
 
     public function process(
         ContentObjectRenderer $cObj,
@@ -136,7 +137,7 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         return $fileDimensions;
     }
 
-    public function getData(): array
+    private function getData(): array
     {
         if (
             $this->processedData['data'] instanceof ContentBlockData

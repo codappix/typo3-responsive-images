@@ -34,6 +34,7 @@
     "require-dev": {
         "b13/container": "^2.3",
         "codappix/typo3-php-datasets": "^1.5",
+        "contentblocks/content-blocks": "^0.7",
         "erickskrauch/php-cs-fixer-custom-fixers": "^1.2",
         "friendsofphp/php-cs-fixer": "^3.50",
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.21",
