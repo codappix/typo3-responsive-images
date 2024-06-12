@@ -11,8 +11,6 @@ parameters:
         - Classes
         - Configuration
 
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
     treatPhpDocTypesAsCertain: false
 
     cognitive_complexity:
@@ -40,3 +38,6 @@ parameters:
                 - '$_FILES'
                 - '$_SERVER'
             message: 'Use API instead'
+
+    ignoreErrors:
+        - identifier: 'missingType.iterableValue'
