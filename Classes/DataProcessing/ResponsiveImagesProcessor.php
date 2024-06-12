@@ -54,6 +54,8 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         array $processorConfiguration,
         array $processedData
     ): array {
+        $this->calculatedFiles = [];
+
         if (isset($processorConfiguration['if.']) && !$cObj->checkIf($processorConfiguration['if.'])) {
             return $processedData;
         }
