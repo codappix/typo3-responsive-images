@@ -36,7 +36,7 @@ class BaseTest extends FunctionalTestCase
     protected function setUp(): void
     {
         $this->coreExtensionsToLoad = [
-            'fluid_styled_content',
+            'typo3/cms-fluid-styled-content',
         ];
 
         $this->testExtensionsToLoad = [
