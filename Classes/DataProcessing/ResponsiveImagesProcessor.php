@@ -26,7 +26,9 @@ namespace Codappix\ResponsiveImages\DataProcessing;
 use Codappix\ResponsiveImages\Domain\Factory\BreakpointFactory;
 use Codappix\ResponsiveImages\Domain\Factory\RootlineFactory;
 use RuntimeException;
+use TYPO3\CMS\ContentBlocks\DataProcessing\ContentBlockData;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
@@ -42,7 +44,10 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
 
     private array $contentElementSizes = [];
 
+    private array $processedData = [];
+
     public function __construct(
+        private readonly FileRepository $fileRepository,
         private readonly BreakpointFactory $breakpointFactory,
         private readonly RootlineFactory $rootlineFactory
     ) {
@@ -54,9 +59,13 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         array $processorConfiguration,
         array $processedData
     ): array {
+        $this->calculatedFiles = [];
+
         if (isset($processorConfiguration['if.']) && !$cObj->checkIf($processorConfiguration['if.'])) {
             return $processedData;
         }
+
+        $this->processedData = $processedData;
 
         $filesDataKey = (string) $cObj->stdWrapValue(
             'filesDataKey',
@@ -68,10 +77,17 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             $processorConfiguration,
             'image'
         );
-        if (isset($processedData[$filesDataKey]) && is_array($processedData[$filesDataKey])) {
-            $this->files = $processedData[$filesDataKey];
-        } else {
-            // Files key is empty or not configured.
+        $targetFieldName = (string) $cObj->stdWrapValue(
+            'as',
+            $processorConfiguration,
+            'responsiveImages'
+        );
+
+        $this->files = $this->getFiles($filesDataKey, $fieldName);
+
+        if (empty($this->files)) {
+            $processedData[$targetFieldName] = [];
+
             return $processedData;
         }
 
@@ -80,15 +96,9 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
             throw new RuntimeException('Could not fetch TypoScriptFrontendController from request.', 1712819889);
         }
 
-        $rootline = $this->rootlineFactory->create($processedData['data'], $fieldName, $tsfe);
+        $rootline = $this->rootlineFactory->create($this->getData(), $fieldName, $tsfe);
         $this->contentElementSizes = $rootline->getFinalSize();
         $this->calculateFileDimensions();
-
-        $targetFieldName = (string) $cObj->stdWrapValue(
-            'as',
-            $processorConfiguration,
-            'responsiveImages'
-        );
 
         $processedData[$targetFieldName] = $this->calculatedFiles;
 
@@ -125,5 +135,44 @@ final class ResponsiveImagesProcessor implements DataProcessorInterface
         }
 
         return $fileDimensions;
+    }
+
+    private function getData(): array
+    {
+        if (
+            $this->processedData['data'] instanceof ContentBlockData
+        ) {
+            assert(is_array($this->processedData['data']->_raw));
+            $data = $this->processedData['data']->_raw;
+        } else {
+            assert(is_array($this->processedData['data']));
+            $data = $this->processedData['data'];
+        }
+
+        return $data;
+    }
+
+    private function getFiles(string $filesDataKey, string $fieldName): array
+    {
+        if (
+            isset($this->processedData[$filesDataKey])
+            && is_array($this->processedData[$filesDataKey])
+        ) {
+            return $this->processedData[$filesDataKey];
+        }
+
+        if ($fieldName === '') {
+            return [];
+        }
+
+        if ($this->processedData['data'] instanceof ContentBlockData) {
+            return $this->processedData['data']->{$fieldName};
+        }
+
+        return $this->fileRepository->findByRelation(
+            'tt_content',
+            $fieldName,
+            $this->processedData['data']['uid']
+        );
     }
 }
