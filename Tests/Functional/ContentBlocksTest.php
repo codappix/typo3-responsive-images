@@ -35,9 +35,6 @@ class ContentBlocksTest extends FunctionalTestCase
 
     protected function setUp(): void
     {
-        $this->coreExtensionsToLoad = [
-        ];
-
         $this->testExtensionsToLoad = [
             'codappix/typo3-responsive-images',
             'contentblocks/content-blocks',
