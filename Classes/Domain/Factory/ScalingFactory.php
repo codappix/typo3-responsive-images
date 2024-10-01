@@ -35,9 +35,14 @@ final class ScalingFactory
 
     public function getByConfigurationPath(array|string $configurationPath): Scaling
     {
-        $configuration = $this->configurationManager->getByPath($configurationPath);
         $multiplier = [];
         $sizes = [];
+
+        if ($this->configurationManager->isValidPath($configurationPath) === false) {
+            return new Scaling($multiplier, $sizes);
+        }
+
+        $configuration = $this->configurationManager->getByPath($configurationPath);
 
         if (is_array($configuration)) {
             $multiplier = !empty($configuration['multiplier']) ? $configuration['multiplier'] : [];
